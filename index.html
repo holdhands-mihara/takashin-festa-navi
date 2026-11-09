@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ホールドハンズ イベントナビ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#cfe8fa; --card:#ffffff; --ink:#23415c; --sub:#5f7c96; --line:#d3e6f5;
+  --main:#4a9fe0; --main-d:#2a74b8; --accent:#7cc4f0; --pink:#e8779a;
+  --kitchen:#f08a24; --craft:#5aaee8; --corp:#6fd0c4; --hq:#3d9a45; --cat:#b57bd6;
+  --ok:#1f8a70; --busy:#d9822b; --out:#9a948a; --cream:#f2f9ff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;color:var(--ink);font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo",system-ui,sans-serif;line-height:1.5}
+body{background-color:#cfe8fa;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.5) 0 10px,transparent 10px 20px),repeating-linear-gradient(90deg,rgba(255,255,255,.5) 0 10px,transparent 10px 20px)}
+.page{max-width:560px;margin:0 auto;background:var(--cream);min-height:100vh;box-shadow:0 0 0 8px rgba(255,255,255,0)}
+@media(min-width:600px){.page{margin-top:12px;border-radius:28px 28px 0 0;overflow:hidden}}
+body{padding-bottom:calc(132px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+.wrap{max-width:560px;margin:0 auto}
+.brand{display:block}
+
+/* header */
+header{position:relative;padding:14px 16px 12px;padding-top:calc(14px + env(safe-area-inset-top));background:var(--cream);overflow:hidden}
+header::before{content:"";position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;background:#d6ecfb;z-index:0}
+header::after{content:"";position:absolute;left:-26px;bottom:-34px;width:110px;height:110px;border-radius:50%;background:#e2ecff;z-index:0}
+header>*{position:relative;z-index:1}
+.hero{display:flex;align-items:center;gap:12px}
+.logo{width:72px;height:72px;display:grid;place-items:center;flex:none}
+.logo img{width:100%;height:100%;object-fit:contain}
+.logo svg{width:40px;height:40px}
+.presented{font-size:11px;color:var(--sub);letter-spacing:.08em}
+h1{margin:0;font-family:"Mochiy Pop One","Zen Maru Gothic",sans-serif;font-size:clamp(18px,5.6vw,27px);line-height:1.2;font-weight:400;letter-spacing:0}
+h1 span{display:inline-block}
+.subttl{font-family:"Zen Kurenaido","Zen Maru Gothic",cursive;font-size:17px;font-weight:700;color:#2f5f8a;margin-top:4px;transform:rotate(-2deg);transform-origin:left}
+.info{display:flex;gap:10px;align-items:center;margin-top:12px}
+.free{flex:none;width:58px;height:58px;border-radius:50%;background:#9fd6f7;display:grid;place-items:center;text-align:center;font-weight:900;font-size:13px;line-height:1.15;transform:rotate(-8deg);box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.datebox{flex:0 1 auto;min-width:0;border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);padding:3px 0;display:flex;align-items:baseline;justify-content:flex-start;gap:clamp(5px,1.6vw,8px);flex-wrap:nowrap;white-space:nowrap}
+.datebox .d{font-family:"Mochiy Pop One",sans-serif;font-size:clamp(22px,7vw,30px);line-height:1.1}
+.datebox .d small{font-size:12px;color:#6b8fc7;margin-left:2px;margin-right:2px}
+.datebox .tm2{font-family:"Mochiy Pop One",sans-serif;font-size:clamp(17px,5.6vw,27px);line-height:1.1;font-variant-numeric:tabular-nums}
+.place{margin-top:8px;display:inline-block;background:#d4ecfb;border-radius:16px 16px 16px 4px;padding:5px 12px;font-size:12px;font-weight:700}
+.sample{background:#e3f2fc;color:#2b5f8a;font-size:12px;padding:6px 12px;text-align:center}
+
+/* live strip */
+.live{margin:10px 12px 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;gap:10px;align-items:center;cursor:pointer}
+.live .dot{width:10px;height:10px;border-radius:50%;background:var(--pink);flex:none;animation:pulse 1.4s infinite}
+.live.off .dot{background:var(--out);animation:none}
+.live b{color:var(--pink)}
+.live .t{font-size:13px;min-width:0}
+.live .t div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(232,87,125,.5)}100%{box-shadow:0 0 0 10px rgba(232,87,125,0)}}
+
+main{padding:12px}
+section[hidden]{display:none}
+h2{font-size:17px;margin:6px 0 10px}
+.hint{font-size:12px;color:var(--sub)}
+
+/* chips */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px;font-size:14px}
+.chip[aria-pressed=true]{background:var(--main);border-color:var(--main);color:#fff}
+.chip.al[aria-pressed=true]{background:var(--pink);border-color:var(--pink)}
+.search{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;background:#fff;margin-bottom:8px}
+
+/* menu list */
+.item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 12px;margin-bottom:8px;width:100%;text-align:left}
+.item .em{font-size:26px;flex:none;width:34px;text-align:center}
+.item .m{flex:1;min-width:0}
+.item .m b{display:block;font-size:15px}
+.item .m span{font-size:12px;color:var(--sub)}
+.item .go{font-size:12px;color:var(--main);font-weight:700;flex:none;text-align:right}
+.item.out{opacity:.55}
+.badge{display:inline-block;font-size:11px;border-radius:6px;padding:1px 6px;margin-right:4px;background:#eee;color:#555}
+.badge.busy{background:#fde7cf;color:#9a5600}
+.badge.out{background:#e6e3dd;color:#6a655d}
+.badge.ok{background:#d6f0e7;color:#14664f}
+.badge.al{background:#fde0e8;color:#a52a55}
+.badge.now{background:var(--pink);color:#fff}
+.badge.next{background:#ffe3a8;color:#7a5200}
+.empty{text-align:center;color:var(--sub);padding:28px 8px}
+
+/* map */
+.mapbox{background:#d6e9f6;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.mapbox svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.booth{cursor:pointer}
+.booth rect{stroke:rgba(0,0,0,.25);stroke-width:1}
+.booth text{font-size:9px;font-weight:700;fill:#2b2a28;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.booth.dim{opacity:.28}
+.booth.hit rect{stroke:#e8577d;stroke-width:3}
+.booth.hit .ring{animation:ring 1.2s infinite}
+.ring{fill:none;stroke:#e8577d;stroke-width:3}
+@keyframes ring{0%{opacity:1}100%{opacity:.2}}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--sub);margin:10px 2px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.maptools{display:flex;gap:8px;margin:0 0 8px;align-items:center}
+.pill{border:1.5px solid var(--main);color:var(--main);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
+
+/* stage */
+.slot{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px;width:100%;text-align:left;align-items:center}
+.slot.now{border-color:var(--pink);box-shadow:0 0 0 2px rgba(232,87,125,.18)}
+.slot .tm{font-variant-numeric:tabular-nums;font-weight:700;font-size:14px;width:56px;flex:none;color:var(--main-d)}
+.slot .tm small{display:block;font-weight:400;color:var(--sub);font-size:11px}
+.slot .nm b{display:block;font-size:15px}
+.slot .nm span{font-size:12px;color:var(--sub)}
+.demo{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:8px 10px;margin-bottom:10px;font-size:12px;color:var(--sub);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.demo input{font:inherit;border:1px solid var(--line);border-radius:8px;padding:3px 6px}
+
+/* my page */
+.bar{height:12px;background:#e9e3d6;border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--pink));width:0;transition:width .3s}
+.stamps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
+.stamp{aspect-ratio:1;border-radius:50%;border:2px dashed var(--line);display:grid;place-items:center;font-size:11px;color:var(--sub);text-align:center;padding:2px;background:#fff;line-height:1.2}
+.stamp.on{border:2px solid var(--accent);background:#eaf5fd;color:#9a5600;font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.goal{background:linear-gradient(135deg,#eaf5fd,#ffe3ec);border:1px solid #bcdcf2;border-radius:14px;padding:12px;margin-bottom:12px;font-weight:700}
+
+/* bottom nav */
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:calc(60px + env(safe-area-inset-bottom));z-index:20}
+nav button{flex:1;border:0;background:none;padding:8px 0 7px;font-size:11px;color:var(--sub);display:flex;flex-direction:column;align-items:center;gap:1px}
+nav button .ic{font-size:22px;line-height:1.1}
+nav button[aria-current=page]{color:var(--main-d);font-weight:700}
+
+/* sheet */
+.veil{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.veil.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-radius:20px 20px 0 0;max-height:82vh;overflow:auto;transform:translateY(105%);transition:transform .25s;padding:6px 16px calc(20px + env(safe-area-inset-bottom));max-width:560px;margin:0 auto}
+.sheet.on{transform:none}
+.grab{width:42px;height:5px;border-radius:9px;background:#d8d2c4;margin:6px auto 10px}
+.sheet h3{margin:0;font-size:20px}
+.sheet .tag{font-size:12px;color:var(--sub);margin:2px 0 8px}
+.sheet p{margin:8px 0}
+.mi{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.mi:last-child{border:0}
+.mi.out{color:var(--out)}
+.mi .pr{font-variant-numeric:tabular-nums;white-space:nowrap}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn{flex:1 1 140px;text-align:center;text-decoration:none;border-radius:12px;padding:11px 10px;font-weight:700;font-size:14px;border:0;background:var(--main);color:#fff}
+.btn.insta{background:linear-gradient(45deg,#f9a03f,#e8477f 55%,#8a49c8)}
+.btn.line{background:#fff;color:var(--main-d);border:1.5px solid var(--main)}
+.btn.fav[aria-pressed=true]{background:var(--pink);color:#fff;border-color:var(--pink)}
+.btn.done{background:#d6f0e7;color:#14664f}
+footer{padding:18px 12px;text-align:center;font-size:12px;color:var(--sub)}
+footer a{color:var(--main-d);font-weight:700}
+
+/* ---- たのしい見た目 ---- */
+h2{font-family:"Mochiy Pop One","Zen Maru Gothic",sans-serif;font-weight:400;font-size:18px;display:inline-block;background:linear-gradient(transparent 62%,#9fd6f7 62%);padding:0 4px}
+main{padding:12px 14px}
+.live{border:2px solid #b9dcf3;border-radius:20px;background:#fff}
+.chip{border:2px solid #b9dcf3;font-weight:700}
+.chip[aria-pressed=true]{background:var(--main);border-color:var(--main);color:#fff;box-shadow:0 2px 0 var(--main-d)}
+.search{border:2px solid #b9dcf3;border-radius:16px}
+.item,.slot,.card{border:2px solid #d6e9f6;border-radius:20px;box-shadow:0 2px 0 #d3e6f5}
+.item .em{background:#e3f2fc;border-radius:50%;width:42px;height:42px;display:grid;place-items:center;font-size:22px}
+.item .go{color:var(--main-d)}
+.mapbox{border:3px solid #b9dcf3;border-radius:24px;background:#d6e9f6}
+.slot .tm{color:var(--main-d)}
+.slot.now{border-color:var(--pink);background:#fff0f4}
+.stamp.on{background:#d4ecfb;border-color:var(--accent);color:#24578a}
+.goal{background:linear-gradient(135deg,#d4ecfb,#ffd1e0);border:2px solid #9ccbec}
+.btn{border-radius:999px;box-shadow:0 3px 0 var(--main-d)}
+.btn.line{box-shadow:none}
+.btn.insta{box-shadow:0 3px 0 #a03a6a}
+nav{border-top:3px solid #b9dcf3;background:#f5faff}
+nav button[aria-current=page]{color:var(--main-d)}
+nav button[aria-current=page] .ic{transform:translateY(-2px) scale(1.15)}
+.sheet{background:var(--cream);border-radius:28px 28px 0 0}
+.sample{background:#e8f4ff;color:#2b5f8a}
+footer a{color:var(--main-d)}
+.pre{white-space:pre-line}
+.booth rect{stroke:#fff;stroke-width:4}
+.booth.hit rect{stroke:#e8577d;stroke-width:8}
+.ring{stroke-width:8}
+.booth text{font-size:26px;font-weight:900;fill:#2b2a28;paint-order:stroke;stroke:#fff;stroke-width:6px;stroke-linejoin:round}
+.booth.stage text{stroke:none}
+.mapbox{background:#cfd6cb}
+</style>
+</head>
+<body>
+
+<div class="page">
+<header>
+  <div class="hero">
+    <div class="logo" id="logo">
+      <img src="logo.png" alt="ホールドハンズ" onerror="this.remove();document.getElementById('logoFallback').style.display='block'">
+      <svg id="logoFallback" style="display:none" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="#f08a24"/><path d="M9 18c0-3 2-4 4-4l3 1 3-1c2 0 4 1 4 4v1c0 2-2 4-5 4h-4c-3 0-5-2-5-4z" fill="#fff"/><circle cx="16" cy="10" r="3" fill="#fff"/></svg>
+    </div>
+    <div>
+      <div class="presented">ホールドハンズ イベントナビ</div>
+      <h1 id="evName"></h1>
+      <div class="subttl" id="evSub"></div>
+    </div>
+  </div>
+  <div class="info">
+    <div class="free" id="evFree">入場<br>無料</div>
+    <div class="datebox"><span class="d" id="evDate"></span><span class="tm2" id="evTime"></span></div>
+  </div>
+  <div class="place" id="evPlace"></div>
+</header>
+<div class="sample" id="sampleBar" hidden>※ いま表示しているお店・メニュー・出演者は<b>サンプル</b>です</div>
+
+<div class="wrap">
+  <div class="live off" id="live" role="button" tabindex="0">
+    <span class="dot"></span>
+    <div class="t" id="liveText"></div>
+  </div>
+
+  <main>
+    <!-- ごはん -->
+    <section id="tab-food">
+      <h2>食べたいものから探す</h2>
+      <input class="search" id="q" type="search" placeholder="例：からあげ、射的、ワークショップ" aria-label="メニュー検索">
+      <div class="chips" id="catChips"></div>
+      <details style="margin-bottom:10px">
+        <summary style="font-size:13px;color:var(--sub);cursor:pointer">アレルギー表示で絞り込む（含まないものだけ表示）</summary>
+        <div class="chips" id="alChips" style="padding-top:8px"></div>
+        <div class="hint">※目安です。必ずお店のスタッフにも確認してください。</div>
+      </details>
+      <div id="foodList"></div>
+    </section>
+
+    <!-- マップ -->
+    <section id="tab-map" hidden>
+      <h2>会場マップ</h2>
+      <div class="maptools">
+        <button class="pill" id="clearHit" hidden>ハイライトを消す</button>
+        <span class="hint" id="mapHint">お店をタップすると詳細が見られます</span>
+      </div>
+      <div class="chips" id="viewChips"><button class="chip" data-v="full" aria-pressed="false">全体</button><button class="chip" data-v="area" aria-pressed="true">会場</button><button class="chip" data-v="zoom" aria-pressed="false">拡大</button></div>
+      <div class="mapbox"><svg id="map" viewBox="950 195 1050 798" role="img" aria-label="会場マップ"></svg></div>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <!-- ステージ -->
+    <section id="tab-stage" hidden>
+      <h2>ステージ・出演スケジュール</h2>
+      <div class="demo" id="demoBox" hidden>
+        <span>テスト用：時刻を指定</span>
+        <input type="time" id="demoTime">
+        <button class="pill" id="demoClear" type="button">解除</button>
+      </div>
+      <div id="stageList"></div>
+    </section>
+
+    <!-- マイ -->
+    <section id="tab-my" hidden>
+      <div id="stampSec"><h2>スタンプラリー</h2>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+          <b id="stampCount"></b><span class="hint">お店でスタンプを集めよう</span>
+        </div>
+        <div class="bar"><i id="stampBar"></i></div>
+        <div class="stamps" id="stamps"></div>
+        <div class="goal" id="goal" hidden></div>
+        <div class="hint">各お店の詳細画面で「スタンプをもらう」を押すと集まります。ゴールしたら本部へ。</div>
+      </div>
+      </div>
+      <h2>お気に入り</h2>
+      <div id="favList"></div>
+    </section>
+  </main>
+
+  <footer>
+    運営：一般社団法人ホールドハンズ<br>
+    <a id="hhInsta" target="_blank" rel="noopener">Instagram @holdhandsgroup をフォロー</a>
+  </footer>
+</div>
+</div>
+
+<nav id="nav">
+  <button data-tab="food" aria-current="page"><span class="ic">🍴</span>ごはん</button>
+  <button data-tab="map"><span class="ic">🗺️</span>マップ</button>
+  <button data-tab="stage"><span class="ic">🎤</span>ステージ</button>
+  <button data-tab="my"><span class="ic">⭐</span><span id="navMyLabel">マイ</span></button>
+</nav>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div id="sheetBody"></div></div>
+
+<script>
+/* ============================================================
+   ★ ここを書き換えるだけで、別のイベントにも使えます ★
+   ============================================================ */
+const EVENT = {
+  name: "タカシンフェスタ",
+  sub: "家族で一日遊べる！秋のファミリーイベント",
+  date: "2026-11-29",            // 当日だけ「いま出演中」が実時間で動く
+  place: "タカシンホーム本社（三原市新倉）",
+  dateLabel: "11/29", dow: "sun", time: "10:00〜16:00", free: true,
+  sample: true,                  // 本番データを入れたら false に
+  hhInstagram: "holdhandsgroup",
+  showPrice: false,              // 値段は表示しない（true にすると各メニューの p を表示）
+  stampRally: false,             // true にするとスタンプラリーが使えます（false で非表示）
+  stampGoal: 5,                  // 何個でゴールか
+  goalMessage: "ゴール！本部ブースでプレゼントをもらおう🎁"
+};
+
+/* type: kitchen / craft / corp / hq / cat */
+const TYPES = {
+  kitchen:{label:"キッチンカー",color:"#f08a24"},
+  craft:{label:"ハンドメイド・物販",color:"#5aaee8"},
+  corp:{label:"企業ブース",color:"#3fb8a8"},
+  hq:{label:"本部",color:"#1f8a70"},
+  cat:{label:"VR・譲渡会",color:"#b57bd6"},
+  show:{label:"展示",color:"#c0392b"}
+};
+/* 食べもの・飲みもののカテゴリ（絵文字つき） */
+const CATS = {
+  "がっつり":"🍖","ごはん・麺":"🍜","軽食":"🌭","スイーツ":"🍰","ドリンク":"🥤"
+};
+const ALLERGENS = ["卵","乳","小麦","えび・かに","そば","落花生"];
+
+/* status: ok=営業中 / busy=混雑  item.out=true で売り切れ */
+let SHOPS = [
+  {id:"K1",type:"kitchen",name:"からあげ屋さん（サンプル）",x:286,y:56,w:58,h:34,insta:"",desc:"外はカリッ、中はジューシーなからあげ。",status:"busy",wait:15,
+    items:[{n:"からあげ 5個",p:500,c:"がっつり",al:["卵","小麦"]},{n:"からあげ丼",p:700,c:"ごはん・麺",al:["卵","小麦"]},{n:"フライドポテト",p:350,c:"軽食",al:[]}]},
+  {id:"K2",type:"kitchen",name:"ハワイアンプレート（サンプル）",x:286,y:98,w:58,h:34,insta:"",desc:"ガーリックシュリンプとロコモコ。",status:"ok",
+    items:[{n:"ロコモコ",p:900,c:"ごはん・麺",al:["卵","乳","小麦"]},{n:"ガーリックシュリンプ",p:800,c:"がっつり",al:["えび・かに","小麦"]},{n:"トロピカルジュース",p:400,c:"ドリンク",al:[]}]},
+  {id:"K3",type:"kitchen",name:"たこ焼き屋さん（サンプル）",x:286,y:140,w:58,h:34,insta:"",desc:"生地からこだわった熱々たこ焼き。",status:"ok",
+    items:[{n:"たこ焼き 8個",p:600,c:"軽食",al:["卵","小麦"]},{n:"ネギマヨたこ焼き 8個",p:700,c:"軽食",al:["卵","乳","小麦"]}]},
+  {id:"K4",type:"kitchen",name:"クレープ＆ワッフル（サンプル）",x:286,y:182,w:58,h:34,insta:"",desc:"季節のフルーツをたっぷり。",status:"ok",
+    items:[{n:"いちごチョコクレープ",p:600,c:"スイーツ",al:["卵","乳","小麦"]},{n:"バナナカスタードクレープ",p:550,c:"スイーツ",al:["卵","乳","小麦"],out:true},{n:"ワッフル",p:500,c:"スイーツ",al:["卵","乳","小麦"]}]},
+  {id:"K5",type:"kitchen",name:"コーヒースタンド（サンプル）",x:286,y:224,w:58,h:34,insta:"",desc:"自家焙煎コーヒーとカフェラテ。",status:"ok",
+    items:[{n:"ホットコーヒー",p:400,c:"ドリンク",al:[]},{n:"カフェラテ",p:500,c:"ドリンク",al:["乳"]},{n:"アイスティー",p:350,c:"ドリンク",al:[]}]},
+  {id:"K6",type:"kitchen",name:"焼きそば・お好み焼き（サンプル）",x:108,y:440,w:58,h:34,insta:"",desc:"鉄板で焼き上げる広島風。",status:"busy",wait:10,
+    items:[{n:"広島風お好み焼き",p:800,c:"がっつり",al:["卵","小麦","えび・かに"]},{n:"焼きそば",p:600,c:"ごはん・麺",al:["卵","小麦"]}]},
+  {id:"K7",type:"kitchen",name:"ホットドッグ専門（サンプル）",x:174,y:440,w:58,h:34,insta:"",desc:"長いソーセージのアメリカンドッグ。",status:"ok",
+    items:[{n:"ホットドッグ",p:500,c:"軽食",al:["乳","小麦"]},{n:"チーズドッグ",p:600,c:"軽食",al:["乳","小麦","卵"]},{n:"レモネード",p:400,c:"ドリンク",al:[]}]},
+  {id:"K8",type:"kitchen",name:"カレー屋さん（サンプル）",x:240,y:440,w:58,h:34,insta:"",desc:"スパイスから作るチキンカレー。",status:"ok",
+    items:[{n:"チキンカレー",p:850,c:"ごはん・麺",al:["乳","小麦"]},{n:"ラッシー",p:400,c:"ドリンク",al:["乳"]}]},
+  {id:"HQ",type:"hq",name:"本部ブース ホールドハンズ",x:22,y:384,w:70,h:34,insta:"holdhandsgroup",desc:"焼き鳥（もも肉）を販売します。迷子・困りごとの相談もここです。",status:"ok",
+    items:[{n:"焼き鳥（もも肉）",p:200,c:"がっつり",al:[]}]},
+  {id:"CAT",type:"cat",name:"VR体験・保護犬猫の譲渡会（サンプル）",x:22,y:430,w:70,h:44,insta:"",desc:"VR体験／保護犬猫の譲渡会",status:"ok",items:[]},
+  {id:"BAL",type:"corp",name:"バルコムモータース（試乗車）",x:0,y:0,w:0,h:0,insta:"",desc:"試乗車があります。",genre:"試乗車",status:"ok",items:[]},
+  {id:"FIRE",type:"show",name:"消防車展示",x:0,y:0,w:0,h:0,insta:"",desc:"消防車の展示です。\n展示時間：10:00〜12:00",genre:"展示",status:"ok",items:[]},
+  {id:"C1",type:"corp",name:"タカシンホーム 住まい相談（サンプル）",x:104,y:392,w:40,h:30,insta:"",desc:"家づくり・リフォームの相談コーナー。",status:"ok",items:[]},
+  {id:"C2",type:"corp",name:"企業ブース2（サンプル）",x:148,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]},
+  {id:"C3",type:"corp",name:"企業ブース3（サンプル）",x:192,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]},
+  {id:"C4",type:"corp",name:"企業ブース4（サンプル）",x:236,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]}
+];
+/* ハンドメイド16店舗（4×4）を自動配置。名前や内容は下の配列を書き換え */
+const CRAFTS = [
+  ["レジンアクセサリー","アクセサリー"],["革小物 工房","革の財布・キーケース"],["布雑貨 ほっこり","ポーチ・巾着"],["キャンドル工房","アロマキャンドル"],
+  ["刺繍とこもの","刺繍ブローチ"],["木工あそび","木のおもちゃ"],["ハーバリウム","ハーバリウム"],["子ども服リメイク","子ども服"],
+  ["ビーズ工房","ビーズアクセサリー"],["ガラスの小物","とんぼ玉"],["フラワーアレンジ","ドライフラワー"],["ワークショップ工作","手作り体験"],
+  ["陶器のお店","マグカップ・お皿"],["ミサンガ屋さん","ミサンガ・編み物"],["雑貨ベル","ハンドメイド雑貨"],["似顔絵コーナー","似顔絵"]
+];
+CRAFTS.forEach((c,i)=>{
+  SHOPS.push({id:"H"+(i+1),type:"craft",name:c[0]+"（サンプル）",x:100+(i%4)*44,y:196+Math.floor(i/4)*44,w:40,h:40,insta:"",
+    desc:c[1]+"のお店です。",status:"ok",items:[]});
+});
+
+/* ステージ：teamを押すと説明とリンクが出ます */
+/* ---- 会場マップ：写真の上に重ねるお店のマーク位置 ---- */
+const MAP_W=2000, MAP_H=1414;
+/* 会場の地図（イラスト）。建物・道路・駐車場の形は航空写真に合わせて描き起こしたもの */
+const MAP_BASE=`<defs>
+  <pattern id="stripes" width="34" height="34" patternUnits="userSpaceOnUse" patternTransform="rotate(-62)">
+    <rect width="34" height="34" fill="none"/><rect x="0" y="0" width="5" height="34" fill="#ffffff" fill-opacity=".75"/>
+  </pattern>
+  <filter id="soft" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>
+<rect width="2000" height="1414" fill="#dcecf8"/>
+<g><circle cx="1770" cy="48" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1762" cy="39" r="9" fill="#c4e8b4"/><circle cx="1830" cy="98" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1822" cy="89" r="9" fill="#c4e8b4"/><circle cx="1720" cy="20" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1712" cy="11" r="9" fill="#c4e8b4"/><circle cx="1955" cy="455" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1947" cy="446" r="9" fill="#c4e8b4"/><circle cx="1965" cy="385" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1957" cy="376" r="9" fill="#c4e8b4"/><circle cx="1935" cy="520" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1927" cy="511" r="9" fill="#c4e8b4"/><circle cx="640" cy="1330" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="632" cy="1321" r="9" fill="#c4e8b4"/><circle cx="690" cy="1384" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="682" cy="1375" r="9" fill="#c4e8b4"/><circle cx="570" cy="1370" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="562" cy="1361" r="9" fill="#c4e8b4"/><circle cx="40" cy="1250" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="32" cy="1241" r="9" fill="#c4e8b4"/><circle cx="40" cy="1330" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="32" cy="1321" r="9" fill="#c4e8b4"/><circle cx="1560" cy="1395" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1552" cy="1386" r="9" fill="#c4e8b4"/><circle cx="1000" cy="1390" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="992" cy="1381" r="9" fill="#c4e8b4"/><circle cx="1090" cy="1330" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1082" cy="1321" r="9" fill="#c4e8b4"/></g>
+<!-- 駐車場（左・関係者） -->
+<polygon points="88,560 245,520 335,705 395,892 470,1062 574,1192 335,1414 100,1414 84,1075 66,815" fill="#dbe4ea"/>
+<polygon points="88,560 245,520 335,705 395,892 470,1062 574,1192 335,1414 100,1414 84,1075 66,815" fill="url(#stripes)" opacity=".55"/>
+<!-- 駐車場（右下・来場者） -->
+<polygon points="1262,1152 1480,1058 1730,975 1990,900 2000,1414 1250,1414 1205,1335" fill="#dbe4ea"/>
+<polygon points="1262,1152 1480,1058 1730,975 1990,900 2000,1414 1250,1414 1205,1335" fill="url(#stripes)" opacity=".55"/>
+<!-- 道路：南 -->
+<polygon points="760,1300 1000,1148 1260,1042 1480,945 1730,865 1990,790 2000,900 1730,975 1480,1058 1260,1152 1000,1260 700,1414 560,1414" fill="#b8c4cc"/>
+<polyline points="720,1356 1000,1204 1260,1097 1480,1002 1730,920 1995,845" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="34 26" opacity=".8"/>
+<!-- 道路：東（試乗車出入口） -->
+<polygon points="1500,0 1650,0 1705,100 1800,300 1865,420 1965,560 2000,640 2000,860 1950,780 1850,562 1760,420 1690,322 1585,112" fill="#b8c4cc"/>
+<polyline points="1575,0 1640,110 1745,320 1810,420 1910,560 1990,740" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="34 26" opacity=".8"/>
+<g fill="#fff" opacity=".85"><rect x="1488" y="6" width="14" height="70" transform="rotate(-18 1495 40)"/><rect x="1512" y="0" width="14" height="70" transform="rotate(-18 1519 35)"/><rect x="1536" y="-6" width="14" height="70" transform="rotate(-18 1543 30)"/></g>
+<!-- 会場の広場（アスファルト） -->
+<polygon points="1100,642 1103,585 1165,472 1530,358 1690,440 1850,562 1950,782 1730,865 1480,945 1262,1040 1150,815 1100,780" fill="#cdd7de" stroke="#fff" stroke-width="5" stroke-dasharray="14 10" stroke-opacity=".8"/>
+<!-- 建物の影 -->
+<g fill="#2a3f55" opacity=".16" filter="url(#soft)" transform="translate(14 18)">
+  <rect x="364" y="418" width="330" height="752" rx="44" transform="rotate(-25.7 529 794)" />
+  <rect x="674" y="247" width="890" height="314" rx="44" transform="rotate(-25.6 1119 404)" />
+  <rect x="510" y="78" width="700" height="110" rx="30" transform="rotate(-25.6 860 133)" />
+  <rect x="711" y="891" width="524" height="308" rx="40" transform="rotate(-25.6 973 1045)" />
+  <rect x="740" y="186" width="700" height="48" rx="22" transform="rotate(-26 1090 210)" />
+  <rect x="-40" y="790" width="120" height="300" rx="24" transform="rotate(0 20 940)" />
+  <rect x="110" y="1295" width="210" height="130" rx="24" transform="rotate(-25 215 1360)" />
+  <rect x="1118" y="1335" width="96" height="110" rx="20" transform="rotate(0 1166 1390)" />
+  <rect x="1925" y="150" width="110" height="200" rx="24" transform="rotate(0 1980 250)" />
+</g>
+<!-- 建物 -->
+<g stroke-width="5" stroke-linejoin="round">
+  <rect x="364" y="418" width="330" height="752" rx="44" transform="rotate(-25.7 529 794)" fill="#eef6fd" stroke="#a9c6de"/>
+  <rect x="674" y="247" width="890" height="314" rx="44" transform="rotate(-25.6 1119 404)" fill="#eef6fd" stroke="#a9c6de"/>
+  <rect x="510" y="78" width="700" height="110" rx="30" transform="rotate(-25.6 860 133)" fill="#e6f1fa" stroke="#a9c6de"/>
+  <rect x="711" y="891" width="524" height="308" rx="40" transform="rotate(-25.6 973 1045)" fill="#eaf3fb" stroke="#a9c6de"/>
+  <rect x="740" y="186" width="700" height="48" rx="22" transform="rotate(-26 1090 210)" fill="#a9c1dd" stroke="#7e95b3"/>
+  <rect x="-40" y="790" width="120" height="300" rx="24" transform="rotate(0 20 940)" fill="#e6f1fa" stroke="#a9c6de"/>
+  <rect x="110" y="1295" width="210" height="130" rx="24" transform="rotate(-25 215 1360)" fill="#e6f1fa" stroke="#a9c6de"/>
+  <rect x="1118" y="1335" width="96" height="110" rx="20" transform="rotate(0 1166 1390)" fill="#e6f1fa" stroke="#a9c6de"/>
+  <rect x="1925" y="150" width="110" height="200" rx="24" transform="rotate(0 1980 250)" fill="#e6f1fa" stroke="#a9c6de"/>
+</g>
+<!-- 会場の色分け -->
+<path d="M1670,470 L1808,718 L1745,808 L1512,912" fill="none" stroke="#7fc4ee" stroke-opacity=".28" stroke-width="120" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="1378,556 1592,480 1690,688 1480,780" fill="#8fd0f5" fill-opacity=".35" stroke="#4a9fe0" stroke-opacity=".7" stroke-width="4" stroke-dasharray="12 8"/>
+<!-- 駐車場 -->
+<g transform="rotate(-20 1780 1165)"><rect x="1620" y="1122" width="320" height="86" rx="43" fill="#d9342b"/><text x="1780" y="1166" style="font-size:42px;font-weight:900;fill:#fff;text-anchor:middle;dominant-baseline:central">来場者駐車場</text></g>
+<g transform="rotate(-20 1775 1330)"><rect x="1730" y="1285" width="90" height="90" rx="14" fill="#1565c0" stroke="#fff" stroke-width="5"/><text x="1775" y="1332" style="font-size:66px;font-weight:900;fill:#fff;text-anchor:middle;dominant-baseline:central">P</text></g>
+<!-- トイレ -->
+<g><rect x="672" y="898" width="76" height="62" rx="10" fill="#fff" stroke="#2b5fa8" stroke-width="4"/><text x="710" y="921" style="font-size:30px;text-anchor:middle;dominant-baseline:central">🚻</text><text x="710" y="947" style="font-size:16px;font-weight:700;fill:#2b5fa8;text-anchor:middle;dominant-baseline:central">トイレ</text></g>
+<g transform="translate(1790 332) rotate(-25)"><polygon points="-50,-14 10,-14 10,-32 56,0 10,32 10,14 -50,14" fill="#fff" stroke="#6b747a" stroke-width="4"/></g>
+<!-- お客さまの入口（本部の左側。矢印なし、文字のみ） -->
+<text x="1360" y="997" transform="rotate(-23.5 1360 997)" style="font-size:38px;font-weight:900;fill:#fff;stroke:#6b747a;stroke-width:9px;paint-order:stroke;text-anchor:middle;dominant-baseline:central">入口</text>
+<!-- タカシンホーム本社 -->
+<g transform="rotate(-23 1000 1040)"><text x="1000" y="1040" style="font-size:44px;font-weight:900;fill:#5b7a95;text-anchor:middle;dominant-baseline:central">タカシンホーム本社</text></g>
+<!-- 消防車 -->
+<text x="1335" y="824" style="font-size:70px;text-anchor:middle;dominant-baseline:central">🚒</text>
+`;
+const POS={};
+[[1675,470],[1722,552],[1765,636],[1745,808],[1672,842],[1600,872],[1512,912],[1512,912]].forEach((p,i)=>{POS["K"+(i+1)]=p});
+for(let n=1;n<=16;n++){const r=Math.floor((n-1)/4), c=(n-1)%4; POS["H"+n]=[1415+c*50+r*25, 565-c*19.7+r*59];}
+POS.C1=[1160,692]; POS.C2=[1185,750]; POS.C3=[1215,805]; POS.C4=[1240,862]; POS.HQ=[1512,912]; POS.CAT=[1390,312]; POS.BAL=[1640,350]; POS.FIRE=[1335,752];
+const SIZE_ID={BAL:[165,92],FIRE:[124,58]};
+const MSIZE={kitchen:[66,42],craft:[46,46],corp:[46,46],hq:[74,46],cat:[232,114]};
+SHOPS.forEach(s=>{const p=POS[s.id]; if(!p) return; const z=SIZE_ID[s.id]||MSIZE[s.type]||[46,46]; s.w=z[0]; s.h=z[1]; s.x=p[0]-z[0]/2; s.y=p[1]-z[1]/2;});
+
+/* ステージ表は Google スプレッドシートから自動で読み込みます（読めない時は下の一覧を表示）。
+   シートは「リンクを知っている全員が閲覧可」にしてください。 */
+const STAGE_SHEET_ID = "1OWz6aoYtQuEKg6ulqwoBPR1cvF1unuaJvulFp35BjMk";
+let STAGE = [
+  {s:"10:00",e:"10:15",team:"オープニング",genre:"ごあいさつ",desc:"ホールドハンズ・タカシンホームより開会のごあいさつ。",links:[{l:"ホールドハンズ Instagram",u:"https://www.instagram.com/holdhandsgroup/"}]},
+  {s:"10:20",e:"10:50",team:"キッズダンスチームA（サンプル）",genre:"ダンス",desc:"小学生中心のダンスチーム。元気いっぱいのステージをお楽しみに！",links:[{l:"Instagram",u:"https://www.instagram.com/"}]},
+  {s:"11:00",e:"11:30",team:"ボーカル 山田さん（サンプル）",genre:"歌",desc:"オリジナル曲とJ-POPカバーを歌います。",links:[{l:"YouTube",u:"https://www.youtube.com/"}]},
+  {s:"11:40",e:"12:10",team:"ヒップホップクルーB（サンプル）",genre:"ダンス",desc:"中高生のヒップホップダンス。",links:[]},
+  {s:"12:20",e:"12:50",team:"フラダンス教室（サンプル）",genre:"ダンス",desc:"優雅なフラダンス。会場みんなで体験タイムも！",links:[]},
+  {s:"13:00",e:"13:30",team:"よさこいチームC（サンプル）",genre:"パフォーマンス",desc:"迫力のよさこい演舞。",links:[]},
+  {s:"13:40",e:"14:10",team:"ジャグリング ゆうさん（サンプル）",genre:"パフォーマンス",desc:"大人も子どもも笑顔になるパフォーマンス。",links:[]},
+  {s:"14:20",e:"15:00",team:"バンド ABC（サンプル）",genre:"歌・演奏",desc:"アコースティックバンド。",links:[]},
+  {s:"15:10",e:"15:45",team:"エンディング・お楽しみ抽選会",genre:"ごあいさつ",desc:"ご来場ありがとうございました。お気をつけてお帰りください。",links:[]}
+];
+
+/* ============================================================ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store = {
+  get(k,d){try{const v=localStorage.getItem("hhnavi:"+k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem("hhnavi:"+k,JSON.stringify(v))}catch(e){}}
+};
+let favs = new Set(store.get("favs",[]));
+let stamps = new Set(store.get("stamps",[]));
+const shopById = id => SHOPS.find(s=>s.id===id);
+const yen = n => "¥"+n.toLocaleString();
+const instaUrl = h => "https://www.instagram.com/"+h.replace(/^@/,"")+"/";
+
+/* ---- 時刻（当日は実時間、それ以外は ?t=11:30 か入力欄でテスト） ---- */
+const toMin = t => {const [h,m]=t.split(":").map(Number);return h*60+m};
+let demoT = new URLSearchParams(location.search).get("t") || store.get("demoT","");
+function nowMin(){
+  if(demoT) return toMin(demoT);
+  const d=new Date(), iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  return iso===EVENT.date ? d.getHours()*60+d.getMinutes() : null;
+}
+function stageState(){
+  const n=nowMin(); if(n==null) return {now:null,next:null,live:false};
+  let now=null,next=null;
+  for(const x of STAGE){
+    if(toMin(x.s)<=n && n<toMin(x.e)) now=x;
+    else if(toMin(x.s)>n && !next) next=x;
+  }
+  return {now,next,live:true};
+}
+
+/* ---- 初期表示 ---- */
+const PAL=["#3da55a","#f08a24","#2e8fd6","#e8588c","#d62f2f","#f3b21b","#2a9aa8","#2a2118"]; /* チラシのロゴと同じ色順 */
+$("#evName").innerHTML=[...EVENT.name].map((c,i)=>'<span style="color:'+PAL[i%PAL.length]+'">'+esc(c)+'</span>').join("");
+$("#evSub").textContent=EVENT.sub;
+$("#evDate").innerHTML=esc(EVENT.dateLabel)+"<small>"+esc(EVENT.dow)+"</small>";
+$("#evTime").textContent=EVENT.time.replace("〜","～");
+$("#evPlace").textContent="📍 "+EVENT.place;
+$("#evFree").hidden=!EVENT.free;
+$("#hhInsta").href = instaUrl(EVENT.hhInstagram);
+if(EVENT.sample) $("#sampleBar").hidden=false;
+if(!EVENT.stampRally){ $("#stampSec").hidden=true; $("#navMyLabel").textContent="お気に入り"; }
+
+/* ---- タブ ---- */
+function go(tab){
+  document.querySelectorAll("main section").forEach(s=>s.hidden = s.id!=="tab-"+tab);
+  document.querySelectorAll("#nav button").forEach(b=>{ if(b.dataset.tab===tab) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+  window.scrollTo({top:0});
+  if(tab==="stage") renderStage();
+  if(tab==="my") renderMy();
+}
+$("#nav").addEventListener("click",e=>{const b=e.target.closest("button");if(b)go(b.dataset.tab)});
+
+/* ---- いま／次 ---- */
+function renderLive(){
+  const st=stageState(), el=$("#live");
+  el.classList.toggle("off",!(st.live&&(st.now||st.next)));
+  let h="";
+  if(!st.live) h='<div><b style="color:var(--sub)">🎤 ステージ</b>　当日になると「いま出演中」が表示されます</div>';
+  else if(!st.now&&!st.next) h='<div><b style="color:var(--sub)">🎤 本日のステージは終了しました</b></div>';
+  else {
+    h=(st.now?'<div><b>いま出演中</b>　'+esc(st.now.team)+'</div>':'<div><b style="color:var(--sub)">いまは休憩中</b></div>')+
+      (st.next?'<div class="hint">次：'+esc(st.next.s)+' '+esc(st.next.team)+'</div>':'');
+  }
+  $("#liveText").innerHTML=h;
+}
+$("#live").addEventListener("click",()=>go("stage"));
+$("#live").addEventListener("keydown",e=>{if(e.key==="Enter")go("stage")});
+
+/* ---- ごはん（メニュー検索） ---- */
+let selCat="すべて", selAl=new Set(), qText="";
+const GEN_EMOJI={"がっつり":"🍖","縁日・ゲーム":"🎯","体験・ワークショップ":"🎨","占い・ハンドメイド":"🔮","アート・ハンドメイド":"🖌️","VR・譲渡会":"🐾","試乗車":"🚗","展示":"🚒","スイーツ・ドリンク":"🍹","整体・リラク":"💆"};
+const emo=(g,type)=>CATS[g]||GEN_EMOJI[g]||(type==="craft"?"🛍️":"🍽️");
+const norm=s=>String(s||"").normalize("NFKC").toLowerCase().replace(/唐揚げ|唐揚|から揚げ|唐あげ|カラアゲ/g,"からあげ").replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-96));
+const hasText=(text,q)=>norm(text).includes(norm(q));
+const snip=t=>{const s=String(t||"").split(/\n+/).map(x=>x.trim()).filter(Boolean).join("／");return s.length>56?s.slice(0,56)+"…":s};
+function genreList(){const g=[];SHOPS.forEach(x=>{if(x.genre&&x.desc&&!g.includes(x.genre))g.push(x.genre)});return g}
+function buildChips(){
+  const src=sheetMode?genreList():Object.keys(CATS);
+  if(selCat!=="すべて"&&!src.includes(selCat)) selCat="すべて";
+  const det=document.querySelector("#tab-food details"); if(det) det.hidden=sheetMode;
+  $("#catChips").innerHTML=["すべて",...src].map(c=>`<button class="chip" aria-pressed="${c===selCat}" data-c="${esc(c)}">${emo(c)} ${esc(c)}</button>`).join("");
+  $("#alChips").innerHTML=ALLERGENS.map(a=>`<button class="chip al" aria-pressed="${selAl.has(a)}" data-a="${esc(a)}">${esc(a)}なし</button>`).join("");
+}
+$("#catChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selCat=b.dataset.c;buildChips();renderFood()});
+$("#alChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const a=b.dataset.a;selAl.has(a)?selAl.delete(a):selAl.add(a);buildChips();renderFood()});
+$("#q").addEventListener("input",e=>{qText=e.target.value.trim();renderFood()});
+function renderFood(){
+  if(sheetMode){
+    const list=SHOPS.filter(s=>s.desc&&(selCat==="すべて"||s.genre===selCat)&&(!qText||hasText([s.name,s.desc,s.pr||"",s.genre||""].join(" "),qText)));
+    list.sort((a,b)=>(a.status==="out"?1:0)-(b.status==="out"?1:0));
+    $("#foodList").innerHTML=list.length?list.map(s=>`
+      <button class="item ${s.status==="out"?"out":""}" data-shop="${esc(s.id)}">
+        <span class="em">${emo(s.genre,s.type)}</span>
+        <span class="m"><b>${esc(s.name)}</b><span>${esc(s.genre||TYPES[s.type].label)}</span><br>
+          <span>${esc(snip(s.desc))}</span><br>
+          ${s.status==="out"?'<span class="badge out">売り切れ</span>':''}${s.status==="busy"?`<span class="badge busy">混雑</span>`:''}</span>
+        <span class="go">${s.x!=null?"📍 場所を見る":"場所は準備中"}</span>
+      </button>`).join(""):'<div class="empty">お店の情報は準備中です。もうしばらくお待ちください</div>';
+    return;
+  }
+  const rows=[];
+  SHOPS.forEach(s=>s.items.forEach(it=>rows.push({s,it})));
+  const list=rows.filter(({s,it})=>
+    (selCat==="すべて"||it.c===selCat) &&
+    (!qText || hasText(it.n+s.name,qText)) &&
+    [...selAl].every(a=>!it.al.includes(a)));
+  list.sort((a,b)=>(a.it.out?1:0)-(b.it.out?1:0));
+  $("#foodList").innerHTML = list.length ? list.map(({s,it})=>`
+    <button class="item ${it.out?"out":""}" data-shop="${s.id}" data-item="${esc(it.n)}">
+      <span class="em">${CATS[it.c]||"🍽️"}</span>
+      <span class="m"><b>${esc(it.n)}</b><span>${esc(s.name)}</span><br>
+        ${it.out?'<span class="badge out">売り切れ</span>':''}${s.status==="busy"?`<span class="badge busy">混雑</span>`:''}
+        ${it.al.map(a=>`<span class="badge al">${esc(a)}</span>`).join("")}</span>
+      <span class="go">${EVENT.showPrice&&it.p!=null?yen(it.p)+"<br>":""}📍 場所を見る</span>
+    </button>`).join("") : '<div class="empty">条件に合うメニューがありません</div>';
+}
+$("#foodList").addEventListener("click",e=>{
+  const b=e.target.closest(".item");if(!b)return;
+  showOnMap(b.dataset.shop,true);
+});
+
+/* ---- マップ ---- */
+let hit=null;
+let mapView="area";
+const VIEWS={full:[0,0,2000,1414],area:[950,195,1050,798]};
+function viewBoxFor(){
+  if(mapView==="zoom"){
+    const t=hit&&shopById(hit), c=(t&&t.x!=null)?[t.x+t.w/2,t.y+t.h/2]:[1550,650], w=560, hh=426;
+    return [Math.min(MAP_W-w,Math.max(0,c[0]-w/2)), Math.min(MAP_H-hh,Math.max(0,c[1]-hh/2)), w, hh];
+  }
+  return VIEWS[mapView]||VIEWS.area;
+}
+function drawMap(){
+  const svg=$("#map");
+  svg.setAttribute("viewBox",viewBoxFor().join(" "));
+  let h=`
+   ${MAP_BASE}
+   <g><rect x="35" y="73" width="791" height="370" rx="24" fill="#f2f9ff" stroke="#b9dcf3" stroke-width="6"/>
+     <text x="430" y="175" style="font-size:80px;font-weight:900;fill:#4a2f1e;text-anchor:middle">会場マップ</text>
+     <text x="430" y="255" style="font-size:42px;font-weight:700;fill:#8a6f5c;text-anchor:middle">${esc(EVENT.name)}</text>
+     <text x="430" y="330" style="font-size:36px;fill:#8a6f5c;text-anchor:middle">お店のマークをタップしてね</text></g>
+   <g class="booth stage" data-go="stage" transform="rotate(-25 1234 556)"><rect x="1129" y="526" width="210" height="60" rx="14" fill="#e8577d"/><text x="1234" y="556" style="font-size:30px;fill:#fff;text-anchor:middle;dominant-baseline:central">🎤 ステージ</text></g>
+   <g><rect x="1235" y="636" width="200" height="52" rx="26" fill="#fff" stroke="#2b5fa8" stroke-width="4"/><text x="1335" y="662" style="font-size:24px;font-weight:700;fill:#2b5fa8;text-anchor:middle;dominant-baseline:central">飲食・観覧席</text></g>`;
+  const active = hit && shopById(hit);
+  if(sheetMode){
+    const used=new Set(SHOPS.map(s=>s.id));
+    Object.keys(SLOTS).filter(k=>!used.has(k)&&k!=="K7"&&k!=="K8").forEach(k=>{const o=SLOTS[k];
+      h+=`<g class="empty-slot"><rect x="${o.x}" y="${o.y}" width="${o.w}" height="${o.h}" rx="5" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="10 8"/><text x="${o.x+o.w/2}" y="${o.y+o.h/2}" style="font-size:18px;fill:#fff;text-anchor:middle;dominant-baseline:central">${k}</text></g>`;});
+  }
+  SHOPS.forEach(s=>{
+    if(s.x==null) return;
+    const c=TYPES[s.type].color, on=active&&active.id===s.id, dim=active&&!on;
+    if(s.id==="BAL"){
+      h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="BAL"><rect x="1557" y="304" width="166" height="92" rx="14" fill="#fff" style="stroke:#2b2a28;stroke-width:5"/>${on?'<rect class="ring" x="1547" y="294" width="186" height="112" rx="20"/>':""}<text x="1640" y="322" style="font-size:26px;fill:#2b2a28;stroke:none;text-anchor:middle;dominant-baseline:central">バルコム</text><text x="1640" y="349" style="font-size:26px;fill:#2b2a28;stroke:none;text-anchor:middle;dominant-baseline:central">モータース</text><text x="1640" y="379" style="font-size:20px;fill:#c9680f;stroke:none;text-anchor:middle;dominant-baseline:central">試乗車あり</text></g>`;
+      return;
+    }
+    if(s.id==="FIRE"){
+      h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="FIRE"><rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="12" fill="#c0392b"/>${on?`<rect class="ring" x="${s.x-10}" y="${s.y-10}" width="${s.w+20}" height="${s.h+20}" rx="18"/>`:""}<text x="${s.x+s.w/2}" y="${s.y+20}" style="font-size:25px;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">消防車展示</text><text x="${s.x+s.w/2}" y="${s.y+43}" style="font-size:19px;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">10:00〜12:00</text></g>`;
+      return;
+    }
+    if(s.id==="CAT"){
+      h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="CAT" transform="rotate(-25 1389 312)"><rect x="1273" y="255" width="232" height="114" rx="16" fill="#9b6bd9"/>${on?'<rect class="ring" x="1263" y="245" width="252" height="134" rx="22"/>':""}<text x="1389" y="290" style="font-size:30px;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">VR体験</text><text x="1389" y="334" style="font-size:27px;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">保護犬猫の譲渡会</text></g>`;
+      return;
+    }
+    h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="${s.id}">
+      <rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="10" fill="${c}" fill-opacity=".93"/>
+      ${on?`<rect class="ring" x="${s.x-10}" y="${s.y-10}" width="${s.w+20}" height="${s.h+20}" rx="16"/>`:""}
+      <text x="${s.x+s.w/2}" y="${s.y+s.h/2}">${s.id==="HQ"?"本部":s.id==="CAT"?"保護猫":s.id}</text>
+      ${s.status==="busy"?`<circle cx="${s.x+s.w-4}" cy="${s.y+4}" r="11" fill="#d9534f" stroke="#fff" stroke-width="3"/>`:""}
+    </g>`;
+  });
+  svg.innerHTML=h;
+  document.querySelectorAll("#viewChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===mapView)));
+  $("#clearHit").hidden=!hit;
+  $("#mapHint").textContent=hit?"ピンクの枠がお探しのお店です":"お店をタップすると詳細が見られます";
+  $("#legend").innerHTML=Object.values(TYPES).map(t=>`<span><i style="background:${t.color}"></i>${t.label}</span>`).join("")+'<span><i style="background:#d9534f;border-radius:50%"></i>混雑中</span>';
+}
+$("#map").addEventListener("click",e=>{
+  const g=e.target.closest(".booth"); if(!g)return;
+  if(g.dataset.go==="stage"){go("stage");return}
+  openShop(g.dataset.id);
+});
+$("#clearHit").addEventListener("click",()=>{hit=null;mapView="area";drawMap()});
+$("#viewChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;mapView=b.dataset.v;drawMap()});
+function showOnMap(id,openSheet){
+  const sp=shopById(id); if(!sp||sp.x==null){ openShop(id); return; }
+  hit=id; mapView="zoom"; go("map"); drawMap();
+  if(openSheet) openShop(id);
+}
+
+/* ---- ステージ ---- */
+function renderStage(){
+  $("#demoBox").hidden = (nowMin()!=null && !demoT) ;
+  $("#demoTime").value = demoT||"";
+  const st=stageState();
+  $("#stageList").innerHTML=STAGE.map((x,i)=>{
+    const isNow=st.now===x, isNext=st.next===x;
+    return `<button class="slot ${isNow?"now":""}" data-i="${i}">
+      <div class="tm">${esc(x.s)}<small>〜${esc(x.e)}</small></div>
+      <div class="nm"><b>${isNow?'<span class="badge now">いま出演中</span>':''}${isNext?'<span class="badge next">次</span>':''}${esc(x.team)}</b><span>${esc(x.genre)}　▶ 詳細・リンク</span></div>
+    </button>`}).join("");
+}
+$("#stageList").addEventListener("click",e=>{const b=e.target.closest(".slot");if(b)openTeam(+b.dataset.i)});
+$("#demoTime").addEventListener("change",e=>{demoT=e.target.value;store.set("demoT",demoT);renderLive();renderStage()});
+$("#demoClear").addEventListener("click",()=>{demoT="";store.set("demoT","");renderLive();renderStage()});
+
+/* ---- マイ（スタンプ・お気に入り） ---- */
+function renderMy(){
+  const goal=EVENT.stampGoal, n=stamps.size;
+  $("#stampCount").textContent=`${Math.min(n,goal)} / ${goal} 個`;
+  $("#stampBar").style.width=Math.min(100,n/goal*100)+"%";
+  const arr=[...stamps];
+  $("#stamps").innerHTML=Array.from({length:goal},(_,i)=>{
+    const s=arr[i]&&shopById(arr[i]);
+    return `<div class="stamp ${s?"on":""}">${s?esc(s.name.replace(/（サンプル）/,"")).slice(0,8):i+1}</div>`}).join("");
+  const g=$("#goal"); g.hidden = n<goal; g.textContent=EVENT.goalMessage;
+  const f=[...favs].map(shopById).filter(Boolean);
+  $("#favList").innerHTML=f.length?f.map(s=>`<button class="item" data-open="${s.id}"><span class="em">❤️</span><span class="m"><b>${esc(s.name)}</b><span>${TYPES[s.type].label}</span></span><span class="go">詳細</span></button>`).join(""):'<div class="empty">お店の詳細で「♡ お気に入り」を押すと、ここに集まります</div>';
+}
+$("#favList").addEventListener("click",e=>{const b=e.target.closest("[data-open]");if(b)openShop(b.dataset.open)});
+
+/* ---- シート（お店・チーム） ---- */
+function sheet(html){ $("#sheetBody").innerHTML=html; $("#sheet").classList.add("on"); $("#veil").classList.add("on"); $("#sheet").scrollTop=0; }
+function closeSheet(){ $("#sheet").classList.remove("on"); $("#veil").classList.remove("on"); }
+$("#veil").addEventListener("click",closeSheet);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet()});
+
+function openShop(id){
+  const s=shopById(id); if(!s)return;
+  const st = s.status==="busy" ? `<span class="badge busy">混雑</span>` : s.status==="out" ? '<span class="badge out">売り切れ</span>' : '<span class="badge ok">営業中</span>';
+  const menu = s.items.length ? `<h4 style="margin:14px 0 4px">メニュー</h4>`+s.items.map(it=>`
+    <div class="mi ${it.out?"out":""}"><span>${esc(it.n)} ${it.out?'<span class="badge out">売り切れ</span>':''}
+      <br>${it.al.map(a=>`<span class="badge al">${esc(a)}</span>`).join("")}</span>${EVENT.showPrice&&it.p!=null?`<span class="pr">${yen(it.p)}</span>`:""}</div>`).join("") : "";
+  const hasS=stamps.has(id), isF=favs.has(id);
+  sheet(`
+    <h3>${esc(s.name)}</h3>
+    <div class="tag">${esc(s.genre||TYPES[s.type].label)}　${s.x!=null?"ブース "+esc(s.id):"場所は準備中"}　${st}</div>
+    ${s.desc?(sheetMode?'<h4 style="margin:14px 0 4px">出店内容</h4>':'')+`<p class="pre">${esc(s.desc)}</p>`:""}
+    ${s.pr?`<h4 style="margin:14px 0 4px">お店からひとこと</h4><p class="pre">${esc(s.pr)}</p>`:""}
+    ${menu}
+    <div class="btns">
+      ${s.insta?`<a class="btn insta" href="${esc(instaUrl(s.insta))}" target="_blank" rel="noopener">📷 Instagramを見る</a>`:""}
+      ${s.x!=null?`<button class="btn line" data-act="map" data-id="${esc(s.id)}">📍 マップで見る</button>`:""}
+      <button class="btn line fav" data-act="fav" data-id="${esc(s.id)}" aria-pressed="${isF}">${isF?"❤️ お気に入り済み":"♡ お気に入り"}</button>
+      ${EVENT.stampRally?`<button class="btn ${hasS?"done":""}" data-act="stamp" data-id="${esc(s.id)}">${hasS?"✅ スタンプ獲得済み":"🏅 スタンプをもらう"}</button>`:""}
+    </div>`);
+}
+function openTeam(i){
+  const x=STAGE[i];
+  sheet(`
+    <h3>${esc(x.team)}</h3>
+    <div class="tag">${esc(x.genre)}　🕒 ${esc(x.s)}〜${esc(x.e)}　📍 特設ステージ</div>
+    <p>${esc(x.desc)}</p>
+    <div class="btns">
+      ${x.links.map(l=>`<a class="btn insta" href="${esc(l.u)}" target="_blank" rel="noopener">🔗 ${esc(l.l)}</a>`).join("")}
+      <button class="btn line" data-act="close">閉じる</button>
+    </div>`);
+}
+$("#sheetBody").addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]"); if(!b)return;
+  const id=b.dataset.id, a=b.dataset.act;
+  if(a==="close") closeSheet();
+  if(a==="map"){closeSheet();showOnMap(id,false)}
+  if(a==="fav"){favs.has(id)?favs.delete(id):favs.add(id);store.set("favs",[...favs]);openShop(id)}
+  if(a==="stamp"){ if(stamps.has(id)) stamps.delete(id); else stamps.add(id); store.set("stamps",[...stamps]); openShop(id) }
+});
+
+/* ---- ステージ表をスプレッドシートから読み込む ---- */
+function parseCSV(t){
+  const rows=[];let r=[],c="",q=false;
+  for(let i=0;i<t.length;i++){const ch=t[i];
+    if(q){ if(ch==='"'){ if(t[i+1]==='"'){c+='"';i++} else q=false } else c+=ch }
+    else if(ch==='"') q=true;
+    else if(ch===','){r.push(c);c=""}
+    else if(ch==="\n"){r.push(c);rows.push(r);r=[];c=""}
+    else if(ch!=="\r") c+=ch;
+  }
+  if(c!==""||r.length){r.push(c);rows.push(r)}
+  return rows;
+}
+const hhmm = s => {const m=String(s||"").match(/(\d{1,2}):(\d{2})/);return m?m[1].padStart(2,"0")+":"+m[2]:null};
+function rowsToStage(rows){
+  return rows.slice(1).map(c=>{
+    const s=hhmm(c[0]), e=hhmm(c[1]), team=(c[2]||"").trim();
+    if(!s||!e||!team) return null;
+    const links=[];
+    for(let k=5;k+1<c.length;k+=2){const u=(c[k+1]||"").trim(); if(/^https?:\/\//.test(u)) links.push({l:(c[k]||"").trim()||"リンク",u});}
+    return {s,e,team,genre:(c[3]||"").trim(),desc:(c[4]||"").trim(),links};
+  }).filter(Boolean).sort((a,b)=>toMin(a.s)-toMin(b.s));
+}
+function applyStage(list){
+  if(!list.length) return;
+  STAGE=list; renderLive(); if(!$("#tab-stage").hidden) renderStage();
+}
+async function loadStage(){
+  try{
+    const res=await fetch("https://docs.google.com/spreadsheets/d/"+STAGE_SHEET_ID+"/gviz/tq?tqx=out:csv&_="+Date.now());
+    if(!res.ok) throw new Error(res.status);
+    const list=rowsToStage(parseCSV(await res.text()));
+    if(list.length){ store.set("stageCache",list); applyStage(list); }
+  }catch(e){
+    const cached=store.get("stageCache",null);
+    if(cached) applyStage(cached);
+  }
+}
+
+/* ---- 出店者をスプレッドシート（「出店者」タブ）から読み込む ----
+   列: 掲載(○) / ブース(K1, H3 など) / ジャンル / 状態(混雑・売り切れ) / 店舗名 / Instagram / 出店内容 / PRポイント / 出店方法 */
+let sheetMode=false;
+const SAMPLE_SHOPS=SHOPS.slice();
+const IS_SLOT=id=>/^[KH]\d+$/.test(id);
+const SLOTS={};
+SAMPLE_SHOPS.filter(s=>IS_SLOT(s.id)).forEach(s=>{SLOTS[s.id]={x:s.x,y:s.y,w:s.w,h:s.h}});
+const FIXED=SAMPLE_SHOPS.filter(s=>!IS_SLOT(s.id)).map(s=>{
+  const c=Object.assign({},s); c.name=c.name.replace(/（サンプル）/,"");
+  if(c.type==="corp"&&/^C[0-9]$/.test(c.id)){c.name="タカシンホーム 企業ブース"+c.id.slice(1);c.desc="";}
+  if(c.id==="HQ"){c.genre="がっつり";c.desc="焼き鳥（もも肉）を販売します。迷子・困りごとの相談もここです。";c.items=[];}
+  if(c.id==="CAT"){c.genre="VR・譲渡会";}
+  return c;
+});
+function normInsta(v){
+  v=String(v||"").trim().replace(/^[@＠]/,"");
+  const m=v.match(/instagram\.com\/([A-Za-z0-9._]+)/i); if(m) v=m[1];
+  return /^[A-Za-z0-9._]{1,30}$/.test(v)?v:"";
+}
+const ON=/^(○|〇|◯|✓|✔|1|true|yes|y|はい|掲載)$/i;
+const cleanName=s=>String(s||"").replace(/["“”«»「」]/g,"").replace(/\s+/g," ").trim();
+const noPrice=s=>EVENT.showPrice?s:s.replace(/[ \t　]*[0-9０-９,，]+\s*円(?:（[^）]*）)?/g,"").replace(/[ \t　]+([、，,／\n])/g,"$1").replace(/[ \t　]{2,}/g," ").trim();
+function rowsToShops(rows){
+  const used=new Set(), out=[];
+  rows.slice(1).forEach((c,i)=>{
+    const name=cleanName(c[4]);
+    if(!ON.test((c[0]||"").trim())||!name) return;
+    const id=(c[1]||"").normalize("NFKC").trim().toUpperCase();
+    const slot=IS_SLOT(id)&&SLOTS[id]&&!used.has(id)?SLOTS[id]:null;
+    if(slot) used.add(id);
+    const method=c[8]||"", status=/売り切れ|完売/.test(c[3]||"")?"out":/混雑/.test(c[3]||"")?"busy":"ok";
+    const type=slot?(id[0]==="K"?"kitchen":"craft"):(/キッチンカー/.test(method)?"kitchen":"craft");
+    out.push(Object.assign({id:slot?id:"S"+(i+1),type,name,insta:normInsta(c[5]),desc:noPrice((c[6]||"").trim()),pr:noPrice((c[7]||"").trim()),genre:(c[2]||"").trim(),status,wait:((c[3]||"").match(/(\d+)\s*分/)||[])[1]||"",items:[]},slot||{}));
+  });
+  return out;
+}
+function applyShops(list){
+  sheetMode=true; EVENT.sample=false; $("#sampleBar").hidden=true;
+  SHOPS=FIXED.concat(list); hit=null;
+  buildChips(); renderFood(); drawMap(); renderMy();
+}
+async function loadShops(){
+  try{
+    const res=await fetch("https://docs.google.com/spreadsheets/d/"+STAGE_SHEET_ID+"/gviz/tq?tqx=out:csv&sheet="+encodeURIComponent("出店者")+"&_="+Date.now());
+    if(!res.ok) throw new Error(res.status);
+    const rows=parseCSV(await res.text());
+    if(!rows.length||!(rows[0]||[]).includes("店舗名")) throw new Error("format");
+    const list=rowsToShops(rows); store.set("shopCache",list); applyShops(list);
+  }catch(e){
+    const cached=store.get("shopCache",null); if(cached) applyShops(cached);
+  }
+}
+
+/* ---- 起動 ---- */
+buildChips(); renderFood(); drawMap(); renderLive();
+setInterval(()=>{renderLive(); if(!$("#tab-stage").hidden) renderStage()},30000);
+loadStage(); setInterval(loadStage,60000);
+loadShops(); setInterval(loadShops,60000);
+</script>
+</body>
+</html>
