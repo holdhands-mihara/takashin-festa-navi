@@ -243,6 +243,9 @@ nav{background:#fff}
 nav{padding-bottom:calc(6px + env(safe-area-inset-bottom))}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 .sheet{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+/* ジャンルのチップは横スクロールをやめ、折り返して全部見せる */
+.chips{flex-wrap:wrap;overflow-x:visible;gap:8px 8px}
+.chip{padding:6px 12px;font-size:13.5px}
 </style>
 </head>
 <body>
