@@ -179,12 +179,63 @@ footer a{color:var(--main-d)}
 .booth text{font-size:26px;font-weight:900;fill:#2b2a28;paint-order:stroke;stroke:#fff;stroke-width:6px;stroke-linejoin:round}
 .booth.stage text{stroke:none}
 .mapbox{background:#cfd6cb}
+
+/* ---- チラシに合わせたカラフル仕様 ---- */
+:root{--bg:#bfe6fa;--main:#e8588c;--main-d:#c23a70;--accent:#f3b21b;--pink:#e8588c;--cream:#f7fbff}
+body{background:linear-gradient(180deg,#7cc8f2 0,#bfe6fa 260px,#fdf6e3 100%);background-attachment:fixed}
+header{background:linear-gradient(180deg,#7cc8f2,#bfe6fa);padding-top:calc(34px + env(safe-area-inset-top))}
+header::before{background:rgba(255,255,255,.35);right:-30px;top:20px}
+header::after{background:rgba(243,178,27,.35)}
+header::after{z-index:0}
+.page{background:#f7fbff}
+.flags{position:absolute;left:0;right:0;top:0;height:26px;z-index:2;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='112' height='26' viewBox='0 0 112 26' preserveAspectRatio='none'><polygon points='0,0 16,0 8,26' fill='%23d62f2f'/><polygon points='16,0 32,0 24,26' fill='%23f3b21b'/><polygon points='32,0 48,0 40,26' fill='%233da55a'/><polygon points='48,0 64,0 56,26' fill='%232e8fd6'/><polygon points='64,0 80,0 72,26' fill='%23e8588c'/><polygon points='80,0 96,0 88,26' fill='%23f08a24'/><polygon points='96,0 112,0 104,26' fill='%238a5cc7'/></svg>") repeat-x;background-size:112px 26px}
+.free{background:#e8588c;color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.15);border:3px solid #fff}
+.datebox{border-color:#e8588c}
+.datebox .d small{color:#d62f2f;font-weight:900}
+.place{background:#fff;color:#2a2118}
+.subttl{color:#fff;text-shadow:0 2px 0 rgba(20,70,120,.55)}
+.presented{color:#23415c;font-weight:700}
+h2{background:linear-gradient(transparent 62%,#ffe44d 62%)}
+.chip{border-color:#bfe0f5}
+.chip[aria-pressed=true]{background:#e8588c;border-color:#e8588c;color:#fff;box-shadow:0 2px 0 #c23a70}
+.item,.slot,.card{border-color:#cfe8fa;box-shadow:0 3px 0 #bfe0f5}
+.item{border-left:8px solid var(--gc,#e8588c)}
+.item .em{background:#fff3c9}
+.pill{border-color:#e8588c;color:#e8588c}
+.live{border-color:#bfe0f5}
+nav{border-top:3px solid #e8588c;background:#fff}
+nav button[aria-current=page]{color:#e8588c}
+.bar>i{background:linear-gradient(90deg,#f3b21b,#e8588c,#8a5cc7)}
+.stamp.on{background:#ffe9a8;border-color:#f3b21b;color:#7a5200}
+.goal{background:linear-gradient(135deg,#ffe9a8,#ffd1e0);border-color:#f3b21b}
+.sheet{background:#f7fbff}
+.mapbox{border-color:#fff;background:#cfe8fa}
+.legend{color:#23415c;font-weight:700}
+
+/* ---- ロゴを白い丸の上に置いて見やすく ---- */
+.logo{width:80px;height:80px;background:#fff;border-radius:50%;padding:8px;box-shadow:0 3px 0 rgba(0,0,0,.14);border:3px solid #fff}
+/* ---- 明るさ調整 ---- */
+body{background:linear-gradient(180deg,#a9defa 0,#d9f1fd 260px,#fffdf3 100%);background-attachment:fixed}
+header{background:linear-gradient(180deg,#8fd3f8,#d6f0fd)}
+header::before{background:rgba(255,255,255,.55)}
+header::after{background:rgba(255,228,77,.5)}
+.page{background:#fbfdff}
+.datebox{border-color:#e8588c}
+.datebox .d{color:#d6246e}
+.datebox .tm2{color:#ffd21f;-webkit-text-stroke:0;text-shadow:0 2px 0 #c98a00,1.5px 0 0 #c98a00,-1.5px 0 0 #c98a00,0 -1.5px 0 #c98a00}
+.item,.slot,.card{border-color:#e1f2fc;box-shadow:0 3px 0 #d3eafa}
+.chip{border-color:#d3eafa}
+.live{border-color:#d3eafa}
+h1,.item .m b,.slot .nm b{color:#2a2118}
+.sample{background:#fff7d1;color:#7a5200}
+nav{background:#fff}
 </style>
 </head>
 <body>
 
 <div class="page">
 <header>
+  <div class="flags"></div>
   <div class="hero">
     <div class="logo" id="logo">
       <img src="logo.png" alt="ホールドハンズ" onerror="this.remove();document.getElementById('logoFallback').style.display='block'">
@@ -309,6 +360,19 @@ const TYPES = {
   cat:{label:"VR・譲渡会",color:"#b57bd6"},
   show:{label:"展示",color:"#c0392b"}
 };
+/* チラシと同じジャンル色（マップのブース色・凡例） */
+const GC={food:"#d62f2f",market:"#e8588c",game:"#2f8fd6",body:"#2f9a5a",exp:"#8a5cc7"};
+function gcol(s){
+  if(s.type==="hq") return GC.body;
+  if(s.type==="cat") return GC.exp;
+  if(s.type==="show") return "#c0392b";
+  if(s.type==="corp") return "#3fb8a8";
+  const g=s.genre||"";
+  if(s.type==="kitchen"||/がっつり|ごはん|麺|スイーツ|ドリンク|軽食|飲食/.test(g)) return GC.food;
+  if(/縁日|ゲーム|占い|ガチャ|射的/.test(g)) return GC.game;
+  if(/整体|リラク|カイロ/.test(g)) return GC.body;
+  return GC.market;
+}
 /* 食べもの・飲みもののカテゴリ（絵文字つき） */
 const CATS = {
   "がっつり":"🍖","ごはん・麺":"🍜","軽食":"🌭","スイーツ":"🍰","ドリンク":"🥤"
@@ -537,7 +601,7 @@ function renderFood(){
     const list=SHOPS.filter(s=>s.desc&&(selCat==="すべて"||s.genre===selCat)&&(!qText||hasText([s.name,s.desc,s.pr||"",s.genre||""].join(" "),qText)));
     list.sort((a,b)=>(a.status==="out"?1:0)-(b.status==="out"?1:0));
     $("#foodList").innerHTML=list.length?list.map(s=>`
-      <button class="item ${s.status==="out"?"out":""}" data-shop="${esc(s.id)}">
+      <button class="item ${s.status==="out"?"out":""}" style="--gc:${gcol(s)}" data-shop="${esc(s.id)}">
         <span class="em">${emo(s.genre,s.type)}</span>
         <span class="m"><b>${esc(s.name)}</b><span>${esc(s.genre||TYPES[s.type].label)}</span><br>
           <span>${esc(snip(s.desc))}</span><br>
@@ -554,7 +618,7 @@ function renderFood(){
     [...selAl].every(a=>!it.al.includes(a)));
   list.sort((a,b)=>(a.it.out?1:0)-(b.it.out?1:0));
   $("#foodList").innerHTML = list.length ? list.map(({s,it})=>`
-    <button class="item ${it.out?"out":""}" data-shop="${s.id}" data-item="${esc(it.n)}">
+    <button class="item ${it.out?"out":""}" style="--gc:${gcol(s)}" data-shop="${s.id}" data-item="${esc(it.n)}">
       <span class="em">${CATS[it.c]||"🍽️"}</span>
       <span class="m"><b>${esc(it.n)}</b><span>${esc(s.name)}</span><br>
         ${it.out?'<span class="badge out">売り切れ</span>':''}${s.status==="busy"?`<span class="badge busy">混雑</span>`:''}
@@ -597,7 +661,7 @@ function drawMap(){
   }
   SHOPS.forEach(s=>{
     if(s.x==null) return;
-    const c=TYPES[s.type].color, on=active&&active.id===s.id, dim=active&&!on;
+    const c=gcol(s), on=active&&active.id===s.id, dim=active&&!on;
     if(s.id==="BAL"){
       h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="BAL"><rect x="1557" y="304" width="166" height="92" rx="14" fill="#fff" style="stroke:#2b2a28;stroke-width:5"/>${on?'<rect class="ring" x="1547" y="294" width="186" height="112" rx="20"/>':""}<text x="1640" y="322" style="font-size:26px;fill:#2b2a28;stroke:none;text-anchor:middle;dominant-baseline:central">バルコム</text><text x="1640" y="349" style="font-size:26px;fill:#2b2a28;stroke:none;text-anchor:middle;dominant-baseline:central">モータース</text><text x="1640" y="379" style="font-size:20px;fill:#c9680f;stroke:none;text-anchor:middle;dominant-baseline:central">試乗車あり</text></g>`;
       return;
@@ -621,7 +685,7 @@ function drawMap(){
   document.querySelectorAll("#viewChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===mapView)));
   $("#clearHit").hidden=!hit;
   $("#mapHint").textContent=hit?"ピンクの枠がお探しのお店です":"お店をタップすると詳細が見られます";
-  $("#legend").innerHTML=Object.values(TYPES).map(t=>`<span><i style="background:${t.color}"></i>${t.label}</span>`).join("")+'<span><i style="background:#d9534f;border-radius:50%"></i>混雑中</span>';
+  $("#legend").innerHTML=[["キッチンカー・飲食",GC.food],["マルシェ・ワークショップ",GC.market],["縁日・占い",GC.game],["整体・カイロ・本部",GC.body],["体験・ふれあい",GC.exp]].map(t=>`<span><i style="background:${t[1]}"></i>${t[0]}</span>`).join("")+'<span><i style="background:#d9534f;border-radius:50%"></i>混雑中</span>';
 }
 $("#map").addEventListener("click",e=>{
   const g=e.target.closest(".booth"); if(!g)return;
@@ -762,7 +826,7 @@ SAMPLE_SHOPS.filter(s=>IS_SLOT(s.id)).forEach(s=>{SLOTS[s.id]={x:s.x,y:s.y,w:s.w
 const FIXED=SAMPLE_SHOPS.filter(s=>!IS_SLOT(s.id)).map(s=>{
   const c=Object.assign({},s); c.name=c.name.replace(/（サンプル）/,"");
   if(c.type==="corp"&&/^C[0-9]$/.test(c.id)){c.name="タカシンホーム 企業ブース"+c.id.slice(1);c.desc="";}
-  if(c.id==="HQ"){c.genre="がっつり";c.desc="焼き鳥（もも肉）を販売します。迷子・困りごとの相談もここです。";c.items=[];}
+  if(c.id==="HQ"){c.genre="がっつり";c.desc="「にわとりが焼くやきとり屋」を出店します。迷子・困りごとの相談もここです。";c.items=[];}
   if(c.id==="CAT"){c.genre="VR・譲渡会";}
   return c;
 });
