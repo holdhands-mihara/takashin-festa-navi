@@ -256,6 +256,12 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 h1{font-size:clamp(26px,8.2vw,44px);line-height:1.15;text-shadow:0 3px 0 rgba(255,255,255,.85),0 0 0 #fff}
 .subttl{font-size:17px;font-weight:900}
 @media(max-width:390px){.presented{font-size:13.5px}h1{font-size:clamp(25px,7.8vw,30px)}.subttl{font-size:15px}}
+/* 結果リストの文字を紺色で読みやすく */
+.item .m span{color:#1f3a68;font-weight:700}
+.item .m>span:nth-of-type(1){font-size:12.5px;color:#3a5a8c}
+.item .m b{font-size:16px;color:#14284d}
+.item .m{line-height:1.5}
+.resHead{color:#14284d}
 </style>
 </head>
 <body>
@@ -634,7 +640,7 @@ const GEN_EMOJI={"がっつり":"🍖","縁日・ゲーム":"🎯","体験・ワ
 const emo=(g,type)=>CATS[g]||GEN_EMOJI[g]||(type==="craft"?"🛍️":"🍽️");
 const norm=s=>String(s||"").normalize("NFKC").toLowerCase().replace(/唐揚げ|唐揚|から揚げ|唐あげ|カラアゲ/g,"からあげ").replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-96));
 const hasText=(text,q)=>norm(text).includes(norm(q));
-const snip=t=>{const s=String(t||"").split(/\n+/).map(x=>x.trim()).filter(Boolean).join("／");return s.length>56?s.slice(0,56)+"…":s};
+const snip=t=>{const s=String(t||"").replace(/[（(]\s*[〜~～ー-]*\s*[)）]/g,"").replace(/\s{2,}/g," ").split(/\n+/).map(x=>x.trim()).filter(Boolean).join("／");return s.length>56?s.slice(0,56)+"…":s};
 function genreList(){const g=[];SHOPS.forEach(x=>{if(x.genre&&x.desc&&!g.includes(x.genre))g.push(x.genre)});return g}
 function buildChips(){
   const src=sheetMode?genreList():Object.keys(CATS);
@@ -688,7 +694,7 @@ function renderFood(){
 }
 $("#foodList").addEventListener("click",e=>{
   const b=e.target.closest(".item");if(!b)return;
-  showOnMap(b.dataset.shop,true);
+  showOnMap(b.dataset.shop,false);
 });
 
 /* ---- マップ ---- */
@@ -744,6 +750,7 @@ function drawMap(){
   svg.innerHTML=h;
   document.querySelectorAll("#viewChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===mapView)));
   $("#clearHit").hidden=!hit;
+  {const hs=$("#mapHint"); if(hs){const t=hit&&shopById(hit); hs.textContent=t?("📍 「"+t.name+"」の場所です。光っているお店をタップすると詳細が見られます"):"お店をタップすると詳細が見られます"; hs.style.fontWeight=t?"700":""; hs.style.color=t?"#d6246e":"";}}
   $("#mapHint").textContent=hit?"ピンクの枠がお探しのお店です":"お店をタップすると詳細が見られます";
   $("#legend").innerHTML=[["キッチンカー・飲食",GC.food],["マルシェ・ワークショップ",GC.market],["縁日・占い",GC.game],["整体・カイロ・本部",GC.body],["体験・ふれあい",GC.exp]].map(t=>`<span><i style="background:${t[1]}"></i>${t[0]}</span>`).join("");
 }
