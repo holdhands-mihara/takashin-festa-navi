@@ -395,7 +395,7 @@ const ALLERGENS = ["卵","乳","小麦","えび・かに","そば","落花生"];
 
 /* status: ok=営業中 / busy=混雑  item.out=true で売り切れ */
 let SHOPS = [
-  {id:"K1",type:"kitchen",name:"からあげ屋さん（サンプル）",x:286,y:56,w:58,h:34,insta:"",desc:"外はカリッ、中はジューシーなからあげ。",status:"busy",wait:15,
+  {id:"K1",type:"kitchen",name:"からあげ屋さん（サンプル）",x:286,y:56,w:58,h:34,insta:"",desc:"外はカリッ、中はジューシーなからあげ。",status:"ok",
     items:[{n:"からあげ 5個",p:500,c:"がっつり",al:["卵","小麦"]},{n:"からあげ丼",p:700,c:"ごはん・麺",al:["卵","小麦"]},{n:"フライドポテト",p:350,c:"軽食",al:[]}]},
   {id:"K2",type:"kitchen",name:"ハワイアンプレート（サンプル）",x:286,y:98,w:58,h:34,insta:"",desc:"ガーリックシュリンプとロコモコ。",status:"ok",
     items:[{n:"ロコモコ",p:900,c:"ごはん・麺",al:["卵","乳","小麦"]},{n:"ガーリックシュリンプ",p:800,c:"がっつり",al:["えび・かに","小麦"]},{n:"トロピカルジュース",p:400,c:"ドリンク",al:[]}]},
@@ -405,7 +405,7 @@ let SHOPS = [
     items:[{n:"いちごチョコクレープ",p:600,c:"スイーツ",al:["卵","乳","小麦"]},{n:"バナナカスタードクレープ",p:550,c:"スイーツ",al:["卵","乳","小麦"],out:true},{n:"ワッフル",p:500,c:"スイーツ",al:["卵","乳","小麦"]}]},
   {id:"K5",type:"kitchen",name:"コーヒースタンド（サンプル）",x:286,y:224,w:58,h:34,insta:"",desc:"自家焙煎コーヒーとカフェラテ。",status:"ok",
     items:[{n:"ホットコーヒー",p:400,c:"ドリンク",al:[]},{n:"カフェラテ",p:500,c:"ドリンク",al:["乳"]},{n:"アイスティー",p:350,c:"ドリンク",al:[]}]},
-  {id:"K6",type:"kitchen",name:"焼きそば・お好み焼き（サンプル）",x:108,y:440,w:58,h:34,insta:"",desc:"鉄板で焼き上げる広島風。",status:"busy",wait:10,
+  {id:"K6",type:"kitchen",name:"焼きそば・お好み焼き（サンプル）",x:108,y:440,w:58,h:34,insta:"",desc:"鉄板で焼き上げる広島風。",status:"ok",
     items:[{n:"広島風お好み焼き",p:800,c:"がっつり",al:["卵","小麦","えび・かに"]},{n:"焼きそば",p:600,c:"ごはん・麺",al:["卵","小麦"]}]},
   {id:"K7",type:"kitchen",name:"ホットドッグ専門（サンプル）",x:174,y:440,w:58,h:34,insta:"",desc:"長いソーセージのアメリカンドッグ。",status:"ok",
     items:[{n:"ホットドッグ",p:500,c:"軽食",al:["乳","小麦"]},{n:"チーズドッグ",p:600,c:"軽食",al:["乳","小麦","卵"]},{n:"レモネード",p:400,c:"ドリンク",al:[]}]},
@@ -619,7 +619,7 @@ function renderFood(){
         <span class="em">${emo(s.genre,s.type)}</span>
         <span class="m"><b>${esc(s.name)}</b><span>${esc(s.genre||TYPES[s.type].label)}</span><br>
           <span>${esc(snip(s.desc))}</span><br>
-          ${s.status==="out"?'<span class="badge out">売り切れ</span>':''}${s.status==="busy"?`<span class="badge busy">混雑</span>`:''}</span>
+          ${s.status==="out"?'<span class="badge out">売り切れ</span>':''}</span>
         <span class="go">${s.x!=null?"📍 場所を見る":"場所は準備中"}</span>
       </button>`).join(""):'<div class="empty">お店の情報は準備中です。もうしばらくお待ちください</div>';
     return;
@@ -635,7 +635,7 @@ function renderFood(){
     <button class="item ${it.out?"out":""}" style="--gc:${gcol(s)}" data-shop="${s.id}" data-item="${esc(it.n)}">
       <span class="em">${CATS[it.c]||"🍽️"}</span>
       <span class="m"><b>${esc(it.n)}</b><span>${esc(s.name)}</span><br>
-        ${it.out?'<span class="badge out">売り切れ</span>':''}${s.status==="busy"?`<span class="badge busy">混雑</span>`:''}
+        ${it.out?'<span class="badge out">売り切れ</span>':''}
         ${it.al.map(a=>`<span class="badge al">${esc(a)}</span>`).join("")}</span>
       <span class="go">${EVENT.showPrice&&it.p!=null?yen(it.p)+"<br>":""}📍 場所を見る</span>
     </button>`).join("") : '<div class="empty">条件に合うメニューがありません</div>';
@@ -692,14 +692,14 @@ function drawMap(){
       <rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="10" fill="${c}" fill-opacity=".93"/>
       ${on?`<rect class="ring" x="${s.x-10}" y="${s.y-10}" width="${s.w+20}" height="${s.h+20}" rx="16"/>`:""}
       <text x="${s.x+s.w/2}" y="${s.y+s.h/2}">${s.id==="HQ"?"本部":s.id==="CAT"?"保護猫":s.id}</text>
-      ${s.status==="busy"?`<circle cx="${s.x+s.w-4}" cy="${s.y+4}" r="11" fill="#d9534f" stroke="#fff" stroke-width="3"/>`:""}
+      
     </g>`;
   });
   svg.innerHTML=h;
   document.querySelectorAll("#viewChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===mapView)));
   $("#clearHit").hidden=!hit;
   $("#mapHint").textContent=hit?"ピンクの枠がお探しのお店です":"お店をタップすると詳細が見られます";
-  $("#legend").innerHTML=[["キッチンカー・飲食",GC.food],["マルシェ・ワークショップ",GC.market],["縁日・占い",GC.game],["整体・カイロ・本部",GC.body],["体験・ふれあい",GC.exp]].map(t=>`<span><i style="background:${t[1]}"></i>${t[0]}</span>`).join("")+'<span><i style="background:#d9534f;border-radius:50%"></i>混雑中</span>';
+  $("#legend").innerHTML=[["キッチンカー・飲食",GC.food],["マルシェ・ワークショップ",GC.market],["縁日・占い",GC.game],["整体・カイロ・本部",GC.body],["体験・ふれあい",GC.exp]].map(t=>`<span><i style="background:${t[1]}"></i>${t[0]}</span>`).join("");
 }
 $("#map").addEventListener("click",e=>{
   const g=e.target.closest(".booth"); if(!g)return;
@@ -753,7 +753,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet()});
 
 function openShop(id){
   const s=shopById(id); if(!s)return;
-  const st = s.status==="busy" ? `<span class="badge busy">混雑</span>` : s.status==="out" ? '<span class="badge out">売り切れ</span>' : '<span class="badge ok">営業中</span>';
+  const st = s.status==="out" ? '<span class="badge out">売り切れ</span>' : '<span class="badge ok">営業中</span>';
   const menu = s.items.length ? `<h4 style="margin:14px 0 4px">メニュー</h4>`+s.items.map(it=>`
     <div class="mi ${it.out?"out":""}"><span>${esc(it.n)} ${it.out?'<span class="badge out">売り切れ</span>':''}
       <br>${it.al.map(a=>`<span class="badge al">${esc(a)}</span>`).join("")}</span>${EVENT.showPrice&&it.p!=null?`<span class="pr">${yen(it.p)}</span>`:""}</div>`).join("") : "";
@@ -860,7 +860,7 @@ function rowsToShops(rows){
     const id=(c[1]||"").normalize("NFKC").trim().toUpperCase();
     const slot=IS_SLOT(id)&&SLOTS[id]&&!used.has(id)?SLOTS[id]:null;
     if(slot) used.add(id);
-    const method=c[8]||"", status=/売り切れ|完売/.test(c[3]||"")?"out":/混雑/.test(c[3]||"")?"busy":"ok";
+    const method=c[8]||"", status=/売り切れ|完売/.test(c[3]||"")?"out":"ok";
     const type=slot?(id[0]==="K"?"kitchen":"craft"):(/キッチンカー/.test(method)?"kitchen":"craft");
     out.push(Object.assign({id:slot?id:"S"+(i+1),type,name,insta:normInsta(c[5]),desc:noPrice((c[6]||"").trim()),pr:noPrice((c[7]||"").trim()),genre:(c[2]||"").trim(),status,wait:((c[3]||"").match(/(\d+)\s*分/)||[])[1]||"",items:[]},slot||{}));
   });
