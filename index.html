@@ -417,9 +417,9 @@ let SHOPS = [
   {id:"BAL",type:"corp",name:"バルコムモータース（試乗車）",x:0,y:0,w:0,h:0,insta:"",desc:"試乗車があります。",genre:"試乗車",status:"ok",items:[]},
   {id:"FIRE",type:"show",name:"消防車展示",x:0,y:0,w:0,h:0,insta:"",desc:"消防車の展示です。\n展示時間：10:00〜12:00",genre:"展示",status:"ok",items:[]},
   {id:"C1",type:"corp",name:"タカシンホーム 住まい相談（サンプル）",x:104,y:392,w:40,h:30,insta:"",desc:"家づくり・リフォームの相談コーナー。",status:"ok",items:[]},
-  {id:"C2",type:"corp",name:"企業ブース2（サンプル）",x:148,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]},
-  {id:"C3",type:"corp",name:"企業ブース3（サンプル）",x:192,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]},
-  {id:"C4",type:"corp",name:"企業ブース4（サンプル）",x:236,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]}
+  {id:"C2",type:"corp",name:"タカシンブース",x:148,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]},
+  {id:"C3",type:"corp",name:"タカシンブース",x:192,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]},
+  {id:"C4",type:"corp",name:"タカシンブース",x:236,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]}
 ];
 /* ハンドメイド16店舗（4×4）を自動配置。名前や内容は下の配列を書き換え */
 const CRAFTS = [
@@ -839,7 +839,7 @@ const SLOTS={};
 SAMPLE_SHOPS.filter(s=>IS_SLOT(s.id)).forEach(s=>{SLOTS[s.id]={x:s.x,y:s.y,w:s.w,h:s.h}});
 const FIXED=SAMPLE_SHOPS.filter(s=>!IS_SLOT(s.id)).map(s=>{
   const c=Object.assign({},s); c.name=c.name.replace(/（サンプル）/,"");
-  if(c.type==="corp"&&/^C[0-9]$/.test(c.id)){c.name="タカシンホーム 企業ブース"+c.id.slice(1);c.desc="";}
+  if(c.type==="corp"&&/^C[0-9]$/.test(c.id)){c.name="タカシンブース";c.desc="ポップコーンなど";c.genre="タカシンブース";}
   if(c.id==="HQ"){c.genre="がっつり";c.desc="「にわとりが焼くやきとり屋」を出店します。迷子・困りごとの相談もここです。";c.items=[];}
   if(c.id==="CAT"){c.genre="VR・譲渡会";}
   return c;
