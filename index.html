@@ -753,8 +753,8 @@ function drawMap(){
     </g>`;
   });
   if(active&&active.x!=null){
-    const nm=(active.name.length>14?active.name.slice(0,13)+"…":active.name), tw=nm.length*30+70, cx=active.x+active.w/2, ty=active.y-46;
-    h+=`<g class="pinlbl" pointer-events="none"><rect x="${cx-tw/2}" y="${ty-30}" width="${tw}" height="56" rx="28" fill="#e8577d" stroke="#fff" stroke-width="5"/><polygon points="${cx-12},${ty+26} ${cx+12},${ty+26} ${cx},${ty+44}" fill="#e8577d"/><text x="${cx}" y="${ty}" style="font-size:30px;font-weight:900;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">📍 ${esc(nm)}</text></g>`;
+    const nm=(active.name.length>14?active.name.slice(0,13)+"…":active.name), tw=nm.length*32+50, cx=active.x+active.w/2, ty=active.y-46;
+    h+=`<g class="pinlbl" pointer-events="none"><rect x="${cx-tw/2}" y="${ty-30}" width="${tw}" height="56" rx="28" fill="#e8577d" stroke="#fff" stroke-width="5"/><polygon points="${cx-12},${ty+26} ${cx+12},${ty+26} ${cx},${ty+44}" fill="#e8577d"/><text x="${cx}" y="${ty}" style="font-size:30px;font-weight:900;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">${esc(nm)}</text></g>`;
   }
   svg.innerHTML=h;
   document.querySelectorAll("#viewChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===mapView)));
@@ -915,7 +915,7 @@ function normInsta(v){
 }
 const ON=/^(○|〇|◯|✓|✔|1|true|yes|y|はい|掲載)$/i;
 const cleanName=s=>String(s||"").replace(/["“”«»「」]/g,"").replace(/\s+/g," ").trim();
-const noPrice=s=>EVENT.showPrice?s:s.replace(/[ \t　]*[0-9０-９,，]+\s*円(?:（[^）]*）)?/g,"").replace(/[ \t　]+([、，,／\n])/g,"$1").replace(/[ \t　]{2,}/g," ").trim();
+const noPrice=s=>EVENT.showPrice?s:s.replace(/(円(?:（[^）]*）)?)(?=[^\s、，,／。\n）)])/g,"$1、").replace(/[ \t　]*[0-9０-９,，]+\s*円(?:（[^）]*）)?/g,"").replace(/[ \t　]+([、，,／\n])/g,"$1").replace(/[ \t　]{2,}/g," ").trim();
 function rowsToShops(rows){
   const used=new Set(), out=[];
   rows.slice(1).forEach((c,i)=>{
