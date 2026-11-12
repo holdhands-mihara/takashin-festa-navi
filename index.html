@@ -249,6 +249,8 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 .cl{margin:2px 2px 6px;font-weight:700;color:#23415c;font-size:13px}
 .chip.mn{border-color:#f3b21b;background:#fffbe6}
 .chip.mn[aria-pressed=true]{background:#f08a24;border-color:#f08a24;color:#fff;box-shadow:0 2px 0 #b8620f}
+.resHead{background:#fff3c9;border:2px solid #f3b21b;border-radius:14px;padding:6px 12px;margin:0 0 10px;font-weight:700;font-size:14px;color:#23415c}
+.resHead b{color:#d6246e;font-size:16px}
 </style>
 </head>
 <body>
@@ -603,6 +605,11 @@ $("#live").addEventListener("keydown",e=>{if(e.key==="Enter")go("stage")});
 
 /* ---- ごはん（メニュー検索） ---- */
 let selCat="すべて", selAl=new Set(), qText="", selMenu="";
+function scrollToResults(){
+  const el=document.getElementById("foodList"); if(!el) return;
+  const y=el.getBoundingClientRect().top+window.pageYOffset-14;
+  window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+}
 /* 食べたいメニュー（出店内容の文字から自動で探す。該当するお店があるものだけ表示） */
 const MENUS=[
   ["からあげ","🍗",/から揚|唐揚|からあげ|カラアゲ/],
@@ -638,22 +645,24 @@ function buildChips(){
   $("#catChips").innerHTML=["すべて",...src].map(c=>`<button class="chip" aria-pressed="${c===selCat}" data-c="${esc(c)}">${emo(c)} ${esc(c)}</button>`).join("");
   $("#alChips").innerHTML=ALLERGENS.map(a=>`<button class="chip al" aria-pressed="${selAl.has(a)}" data-a="${esc(a)}">${esc(a)}なし</button>`).join("");
 }
-$("#menuChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selMenu=(selMenu===b.dataset.m)?"":b.dataset.m;buildChips();renderFood()});
-$("#catChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selCat=b.dataset.c;buildChips();renderFood()});
+$("#menuChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selMenu=(selMenu===b.dataset.m)?"":b.dataset.m;buildChips();renderFood();if(selMenu)scrollToResults()});
+$("#catChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selCat=b.dataset.c;buildChips();renderFood();if(selCat!=="すべて")scrollToResults()});
 $("#alChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const a=b.dataset.a;selAl.has(a)?selAl.delete(a):selAl.add(a);buildChips();renderFood()});
 $("#q").addEventListener("input",e=>{qText=e.target.value.trim();renderFood()});
 function renderFood(){
   if(sheetMode){
     const list=SHOPS.filter(s=>s.desc&&(selCat==="すべて"||s.genre===selCat)&&(!selMenu||MENUS.find(m=>m[0]===selMenu)[2].test(shopText(s)))&&(!qText||hasText([s.name,s.desc,s.pr||"",s.genre||""].join(" "),qText)));
     list.sort((a,b)=>(a.status==="out"?1:0)-(b.status==="out"?1:0));
-    $("#foodList").innerHTML=list.length?list.map(s=>`
+    const lab=[selMenu,selCat!=="すべて"?selCat:""].filter(Boolean).join(" × ");
+    const head=lab?`<div class="resHead">「${esc(lab)}」のお店　<b>${list.length}件</b></div>`:"";
+    $("#foodList").innerHTML=head+(list.length?list.map(s=>`
       <button class="item ${s.status==="out"?"out":""}" style="--gc:${gcol(s)}" data-shop="${esc(s.id)}">
         <span class="em">${emo(s.genre,s.type)}</span>
         <span class="m"><b>${esc(s.name)}</b><span>${esc(s.genre||TYPES[s.type].label)}</span><br>
           <span>${esc(snip(s.desc))}</span><br>
           ${s.status==="out"?'<span class="badge out">売り切れ</span>':''}</span>
         <span class="go">${s.x!=null?"📍 場所を見る":"場所は準備中"}</span>
-      </button>`).join(""):'<div class="empty">お店の情報は準備中です。もうしばらくお待ちください</div>';
+      </button>`).join(""):'<div class="empty">お店の情報は準備中です。もうしばらくお待ちください</div>');
     return;
   }
   const rows=[];
