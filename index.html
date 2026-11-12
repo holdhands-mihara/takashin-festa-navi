@@ -262,6 +262,9 @@ h1{font-size:clamp(26px,8.2vw,44px);line-height:1.15;text-shadow:0 3px 0 rgba(25
 .item .m b{font-size:16px;color:#14284d}
 .item .m{line-height:1.5}
 .resHead{color:#14284d}
+.pill.back{background:#fff;border:2px solid #e8577d;color:#d6246e;font-weight:700}
+.item .go .bn{display:inline-block;margin-top:2px;background:#e8577d;color:#fff;border-radius:10px;padding:0 8px;font-size:13px}
+.maptools{flex-wrap:wrap;gap:6px}
 </style>
 </head>
 <body>
@@ -315,6 +318,7 @@ h1{font-size:clamp(26px,8.2vw,44px);line-height:1.15;text-shadow:0 3px 0 rgba(25
     <section id="tab-map" hidden>
       <h2>会場マップ</h2>
       <div class="maptools">
+        <button class="pill back" id="backList" hidden>← 一覧にもどる</button>
         <button class="pill" id="clearHit" hidden>ハイライトを消す</button>
         <span class="hint" id="mapHint">お店をタップすると詳細が見られます</span>
       </div>
@@ -672,7 +676,7 @@ function renderFood(){
         <span class="m"><b>${esc(s.name)}</b><span>${esc(s.genre||TYPES[s.type].label)}</span><br>
           <span>${esc(snip(s.desc))}</span><br>
           ${s.status==="out"?'<span class="badge out">売り切れ</span>':''}</span>
-        <span class="go">${s.x!=null?"📍 場所を見る":"場所は準備中"}</span>
+        <span class="go">${s.x!=null?"📍 場所を見る"+(/^[HK]\d+$/.test(s.id)?'<br><b class="bn">'+esc(s.id)+'</b>':""):"場所は準備中"}</span>
       </button>`).join(""):(lab?'<div class="empty">該当するお店はありません</div>':'<div class="empty">お店の情報は準備中です。もうしばらくお待ちください</div>'));
     return;
   }
@@ -694,13 +698,14 @@ function renderFood(){
 }
 $("#foodList").addEventListener("click",e=>{
   const b=e.target.closest(".item");if(!b)return;
+  listY=window.pageYOffset; fromList=1;
   showOnMap(b.dataset.shop,false);
 });
 
 /* ---- マップ ---- */
-let hit=null;
+let hit=null; let fromList=0, listY=0;
 let mapView="area";
-const VIEWS={full:[0,0,2000,1414],area:[950,195,1050,798]};
+const VIEWS={full:[0,0,2000,1414],area:[997,238,940,714]};
 function viewBoxFor(){
   if(mapView==="zoom"){
     const t=hit&&shopById(hit), c=(t&&t.x!=null)?[t.x+t.w/2,t.y+t.h/2]:[1550,650], w=560, hh=426;
@@ -747,9 +752,13 @@ function drawMap(){
       
     </g>`;
   });
+  if(active&&active.x!=null){
+    const nm=(active.name.length>14?active.name.slice(0,13)+"…":active.name), tw=nm.length*30+70, cx=active.x+active.w/2, ty=active.y-46;
+    h+=`<g class="pinlbl" pointer-events="none"><rect x="${cx-tw/2}" y="${ty-30}" width="${tw}" height="56" rx="28" fill="#e8577d" stroke="#fff" stroke-width="5"/><polygon points="${cx-12},${ty+26} ${cx+12},${ty+26} ${cx},${ty+44}" fill="#e8577d"/><text x="${cx}" y="${ty}" style="font-size:30px;font-weight:900;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">📍 ${esc(nm)}</text></g>`;
+  }
   svg.innerHTML=h;
   document.querySelectorAll("#viewChips .chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===mapView)));
-  $("#clearHit").hidden=!hit;
+  $("#clearHit").hidden=!hit; $("#backList").hidden=!(hit&&fromList);
   {const hs=$("#mapHint"); if(hs){const t=hit&&shopById(hit); hs.textContent=t?("📍 「"+t.name+"」の場所です。光っているお店をタップすると詳細が見られます"):"お店をタップすると詳細が見られます"; hs.style.fontWeight=t?"700":""; hs.style.color=t?"#d6246e":"";}}
   $("#mapHint").textContent=hit?"ピンクの枠がお探しのお店です":"お店をタップすると詳細が見られます";
   $("#legend").innerHTML=[["キッチンカー・飲食",GC.food],["マルシェ・ワークショップ",GC.market],["縁日・占い",GC.game],["整体・カイロ・本部",GC.body],["体験・ふれあい",GC.exp]].map(t=>`<span><i style="background:${t[1]}"></i>${t[0]}</span>`).join("");
@@ -759,11 +768,12 @@ $("#map").addEventListener("click",e=>{
   if(g.dataset.go==="stage"){go("stage");return}
   openShop(g.dataset.id);
 });
-$("#clearHit").addEventListener("click",()=>{hit=null;mapView="area";drawMap()});
+$("#clearHit").addEventListener("click",()=>{hit=null;fromList=0;mapView="area";drawMap()});
+$("#backList").addEventListener("click",()=>{go("food");fromList=0;setTimeout(()=>window.scrollTo({top:listY,behavior:"auto"}),30)});
 $("#viewChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;mapView=b.dataset.v;drawMap()});
 function showOnMap(id,openSheet){
   const sp=shopById(id); if(!sp||sp.x==null){ openShop(id); return; }
-  hit=id; mapView="zoom"; go("map"); drawMap();
+  hit=id; mapView="area"; go("map"); drawMap();
   setTimeout(()=>{const m=document.querySelector(".mapbox");if(m)window.scrollTo({top:Math.max(0,m.getBoundingClientRect().top+window.pageYOffset-64),behavior:"smooth"})},60);
   if(openSheet) openShop(id);
 }
@@ -840,7 +850,7 @@ $("#sheetBody").addEventListener("click",e=>{
   const b=e.target.closest("[data-act]"); if(!b)return;
   const id=b.dataset.id, a=b.dataset.act;
   if(a==="close") closeSheet();
-  if(a==="map"){closeSheet();showOnMap(id,false)}
+  if(a==="map"){closeSheet();fromList=0;showOnMap(id,false)}
   if(a==="fav"){favs.has(id)?favs.delete(id):favs.add(id);store.set("favs",[...favs]);openShop(id)}
   if(a==="stamp"){ if(stamps.has(id)) stamps.delete(id); else stamps.add(id); store.set("stamps",[...stamps]); openShop(id) }
 });
