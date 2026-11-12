@@ -764,6 +764,7 @@ $("#viewChips").addEventListener("click",e=>{const b=e.target.closest(".chip");i
 function showOnMap(id,openSheet){
   const sp=shopById(id); if(!sp||sp.x==null){ openShop(id); return; }
   hit=id; mapView="zoom"; go("map"); drawMap();
+  setTimeout(()=>{const m=document.querySelector(".mapbox");if(m)window.scrollTo({top:Math.max(0,m.getBoundingClientRect().top+window.pageYOffset-64),behavior:"smooth"})},60);
   if(openSheet) openShop(id);
 }
 
