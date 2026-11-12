@@ -251,6 +251,11 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 .chip.mn[aria-pressed=true]{background:#f08a24;border-color:#f08a24;color:#fff;box-shadow:0 2px 0 #b8620f}
 .resHead{background:#fff3c9;border:2px solid #f3b21b;border-radius:14px;padding:6px 12px;margin:0 0 10px;font-weight:700;font-size:14px;color:#23415c}
 .resHead b{color:#d6246e;font-size:16px}
+/* ヘッダーの文字を大きく */
+.presented{font-size:15px;font-weight:900;letter-spacing:.06em;color:#1b3a63}
+h1{font-size:clamp(26px,8.2vw,44px);line-height:1.15;text-shadow:0 3px 0 rgba(255,255,255,.85),0 0 0 #fff}
+.subttl{font-size:17px;font-weight:900}
+@media(max-width:390px){.presented{font-size:13.5px}h1{font-size:clamp(25px,7.8vw,30px)}.subttl{font-size:15px}}
 </style>
 </head>
 <body>
@@ -645,8 +650,8 @@ function buildChips(){
   $("#catChips").innerHTML=["すべて",...src].map(c=>`<button class="chip" aria-pressed="${c===selCat}" data-c="${esc(c)}">${emo(c)} ${esc(c)}</button>`).join("");
   $("#alChips").innerHTML=ALLERGENS.map(a=>`<button class="chip al" aria-pressed="${selAl.has(a)}" data-a="${esc(a)}">${esc(a)}なし</button>`).join("");
 }
-$("#menuChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selMenu=(selMenu===b.dataset.m)?"":b.dataset.m;buildChips();renderFood();if(selMenu)scrollToResults()});
-$("#catChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selCat=b.dataset.c;buildChips();renderFood();if(selCat!=="すべて")scrollToResults()});
+$("#menuChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selMenu=(selMenu===b.dataset.m)?"":b.dataset.m;if(selMenu)selCat="すべて";buildChips();renderFood();if(selMenu)scrollToResults()});
+$("#catChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selCat=b.dataset.c;if(selCat!=="すべて")selMenu="";buildChips();renderFood();if(selCat!=="すべて")scrollToResults()});
 $("#alChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const a=b.dataset.a;selAl.has(a)?selAl.delete(a):selAl.add(a);buildChips();renderFood()});
 $("#q").addEventListener("input",e=>{qText=e.target.value.trim();renderFood()});
 function renderFood(){
@@ -662,7 +667,7 @@ function renderFood(){
           <span>${esc(snip(s.desc))}</span><br>
           ${s.status==="out"?'<span class="badge out">売り切れ</span>':''}</span>
         <span class="go">${s.x!=null?"📍 場所を見る":"場所は準備中"}</span>
-      </button>`).join(""):'<div class="empty">お店の情報は準備中です。もうしばらくお待ちください</div>');
+      </button>`).join(""):(lab?'<div class="empty">該当するお店はありません</div>':'<div class="empty">お店の情報は準備中です。もうしばらくお待ちください</div>'));
     return;
   }
   const rows=[];
