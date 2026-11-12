@@ -239,6 +239,10 @@ nav{background:#fff}
 .subttl{color:#1b4f82;text-shadow:0 1px 0 rgba(255,255,255,.9),1px 0 0 rgba(255,255,255,.9),-1px 0 0 rgba(255,255,255,.9);font-size:16px}
 @media(max-width:390px){.free{width:48px;height:48px;font-size:11px}.info{gap:6px}.datebox{padding:4px 6px;gap:4px}.datebox .d{font-size:19px}.datebox .d small{font-size:10px}.datebox .tm2{font-size:13px;padding:1px 6px}.subttl{font-size:14px}}
 .datebox .tm2{background:none;color:#ffc400;padding:0;border-radius:0;text-shadow:0 2px 0 #a86a00,1.5px 0 0 #a86a00,-1.5px 0 0 #a86a00,0 -1.5px 0 #a86a00,1.5px 1.5px 0 #a86a00,-1.5px -1.5px 0 #a86a00,1.5px -1.5px 0 #a86a00,-1.5px 1.5px 0 #a86a00}
+/* Netlifyのロゴ用の空きをなくし、ナビを下に寄せる */
+nav{padding-bottom:calc(6px + env(safe-area-inset-bottom))}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+.sheet{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
