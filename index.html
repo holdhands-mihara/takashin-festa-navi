@@ -246,6 +246,9 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 /* ジャンルのチップは横スクロールをやめ、折り返して全部見せる */
 .chips{flex-wrap:wrap;overflow-x:visible;gap:8px 8px}
 .chip{padding:6px 12px;font-size:13.5px}
+.cl{margin:2px 2px 6px;font-weight:700;color:#23415c;font-size:13px}
+.chip.mn{border-color:#f3b21b;background:#fffbe6}
+.chip.mn[aria-pressed=true]{background:#f08a24;border-color:#f08a24;color:#fff;box-shadow:0 2px 0 #b8620f}
 </style>
 </head>
 <body>
@@ -283,6 +286,9 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
     <section id="tab-food">
       <h2>食べたいものから探す</h2>
       <input class="search" id="q" type="search" placeholder="例：からあげ、射的、ワークショップ" aria-label="メニュー検索">
+      <div class="hint cl" id="menuLabel" hidden>🍴 食べたいものをタップ（もう一度押すと解除）</div>
+      <div class="chips" id="menuChips" hidden></div>
+      <div class="hint cl" id="catLabel" hidden>ジャンルで絞る</div>
       <div class="chips" id="catChips"></div>
       <details style="margin-bottom:10px">
         <summary style="font-size:13px;color:var(--sub);cursor:pointer">アレルギー表示で絞り込む（含まないものだけ表示）</summary>
@@ -596,7 +602,22 @@ $("#live").addEventListener("click",()=>go("stage"));
 $("#live").addEventListener("keydown",e=>{if(e.key==="Enter")go("stage")});
 
 /* ---- ごはん（メニュー検索） ---- */
-let selCat="すべて", selAl=new Set(), qText="";
+let selCat="すべて", selAl=new Set(), qText="", selMenu="";
+/* 食べたいメニュー（出店内容の文字から自動で探す。該当するお店があるものだけ表示） */
+const MENUS=[
+  ["からあげ","🍗",/から揚|唐揚|からあげ|カラアゲ/],
+  ["ポテト","🍟",/ポテト/],
+  ["麺・焼きそば","🍜",/麺|そば|ラーメン|うどん/],
+  ["お好み焼き","🥘",/お好み焼|お好みやき/],
+  ["バーガー","🍔",/バーガー/],
+  ["ターキーレッグ","🍖",/ターキー/],
+  ["やきとり","🍢",/やきとり|焼き鳥|焼鳥/],
+  ["クレープ","🥞",/クレープ/],
+  ["ホットク・チュロス","🥐",/ホットク|チュリトス|チュロス/],
+  ["フルーツ飴","🍎",/飴|あめ/],
+  ["ドリンク","🥤",/ドリンク|サワー|スカッシュ|タピオカ|ジュース|コーヒー|ラテ/]
+];
+const shopText=s=>[s.name,s.desc,s.genre||"",(s.items||[]).map(i=>i.n).join(" ")].join(" ");
 const GEN_EMOJI={"がっつり":"🍖","縁日・ゲーム":"🎯","体験・ワークショップ":"🎨","占い・ハンドメイド":"🔮","アート・ハンドメイド":"🖌️","VR・譲渡会":"🐾","試乗車":"🚗","展示":"🚒","スイーツ・ドリンク":"🍹","整体・リラク":"💆"};
 const emo=(g,type)=>CATS[g]||GEN_EMOJI[g]||(type==="craft"?"🛍️":"🍽️");
 const norm=s=>String(s||"").normalize("NFKC").toLowerCase().replace(/唐揚げ|唐揚|から揚げ|唐あげ|カラアゲ/g,"からあげ").replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-96));
@@ -607,15 +628,23 @@ function buildChips(){
   const src=sheetMode?genreList():Object.keys(CATS);
   if(selCat!=="すべて"&&!src.includes(selCat)) selCat="すべて";
   const det=document.querySelector("#tab-food details"); if(det) det.hidden=sheetMode;
+  const mc=$("#menuChips");
+  if(mc){
+    const avail=sheetMode?MENUS.filter(m=>SHOPS.some(s=>s.desc&&m[2].test(shopText(s)))):[];
+    if(selMenu&&!avail.some(m=>m[0]===selMenu)) selMenu="";
+    mc.hidden=$("#menuLabel").hidden=$("#catLabel").hidden=!avail.length;
+    mc.innerHTML=avail.map(m=>`<button class="chip mn" aria-pressed="${m[0]===selMenu}" data-m="${esc(m[0])}">${m[1]} ${esc(m[0])}</button>`).join("");
+  }
   $("#catChips").innerHTML=["すべて",...src].map(c=>`<button class="chip" aria-pressed="${c===selCat}" data-c="${esc(c)}">${emo(c)} ${esc(c)}</button>`).join("");
   $("#alChips").innerHTML=ALLERGENS.map(a=>`<button class="chip al" aria-pressed="${selAl.has(a)}" data-a="${esc(a)}">${esc(a)}なし</button>`).join("");
 }
+$("#menuChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selMenu=(selMenu===b.dataset.m)?"":b.dataset.m;buildChips();renderFood()});
 $("#catChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;selCat=b.dataset.c;buildChips();renderFood()});
 $("#alChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const a=b.dataset.a;selAl.has(a)?selAl.delete(a):selAl.add(a);buildChips();renderFood()});
 $("#q").addEventListener("input",e=>{qText=e.target.value.trim();renderFood()});
 function renderFood(){
   if(sheetMode){
-    const list=SHOPS.filter(s=>s.desc&&(selCat==="すべて"||s.genre===selCat)&&(!qText||hasText([s.name,s.desc,s.pr||"",s.genre||""].join(" "),qText)));
+    const list=SHOPS.filter(s=>s.desc&&(selCat==="すべて"||s.genre===selCat)&&(!selMenu||MENUS.find(m=>m[0]===selMenu)[2].test(shopText(s)))&&(!qText||hasText([s.name,s.desc,s.pr||"",s.genre||""].join(" "),qText)));
     list.sort((a,b)=>(a.status==="out"?1:0)-(b.status==="out"?1:0));
     $("#foodList").innerHTML=list.length?list.map(s=>`
       <button class="item ${s.status==="out"?"out":""}" style="--gc:${gcol(s)}" data-shop="${esc(s.id)}">
