@@ -405,7 +405,8 @@ const TYPES = {
   corp:{label:"企業ブース",color:"#3fb8a8"},
   hq:{label:"本部",color:"#1f8a70"},
   cat:{label:"VR・譲渡会",color:"#b57bd6"},
-  show:{label:"展示",color:"#c0392b"}
+  show:{label:"展示",color:"#c0392b"},
+  info:{label:"案内・展示",color:"#3d5a80"}
 };
 /* チラシと同じジャンル色（マップのブース色・凡例） */
 const GC={food:"#d62f2f",market:"#e8588c",game:"#2f8fd6",body:"#2f9a5a",exp:"#8a5cc7"};
@@ -413,6 +414,7 @@ function gcol(s){
   if(s.type==="hq") return GC.body;
   if(s.type==="cat") return GC.exp;
   if(s.type==="show") return "#c0392b";
+  if(s.type==="info") return "#3d5a80";
   if(s.type==="corp") return "#3fb8a8";
   const g=s.genre||"";
   if(s.type==="kitchen"||/がっつり|ごはん|麺|スイーツ|ドリンク|軽食|飲食/.test(g)) return GC.food;
@@ -449,6 +451,8 @@ let SHOPS = [
   {id:"CAT",type:"cat",name:"VR体験・保護犬猫の譲渡会（サンプル）",x:22,y:430,w:70,h:44,insta:"",desc:"VR体験／保護犬猫の譲渡会",status:"ok",items:[]},
   {id:"BAL",type:"corp",name:"バルコムモータース（試乗車）",x:0,y:0,w:0,h:0,insta:"",desc:"試乗車があります。",genre:"試乗車",status:"ok",items:[]},
   {id:"FIRE",type:"show",name:"消防車展示",x:0,y:0,w:0,h:0,insta:"",desc:"消防車の展示です。\n展示時間：10:00〜12:00",genre:"展示",status:"ok",items:[]},
+  {id:"UKE",type:"info",info:true,label:"受付",name:"受付",x:0,y:0,w:0,h:0,insta:"",desc:"来場者の受付です。\n迷子・困りごとのご相談も、こちらで受け付けます。",genre:"案内",status:"ok",items:[]},
+  {id:"HOME",type:"info",info:true,label:"展示・相談",name:"タカシンホーム 住まいの展示・相談",x:0,y:0,w:0,h:0,insta:"",desc:"タカシンホーム本社の中にある、住まいの展示と相談のコーナーです。\n・土地商談コーナー\n・セットプランコーナー\n・防災コーナー（防災展示・防災関連）",genre:"展示・相談",status:"ok",items:[]},
   {id:"C1",type:"corp",name:"タカシンホーム 住まい相談（サンプル）",x:104,y:392,w:40,h:30,insta:"",desc:"家づくり・リフォームの相談コーナー。",status:"ok",items:[]},
   {id:"C2",type:"corp",name:"タカシンブース",x:148,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]},
   {id:"C3",type:"corp",name:"タカシンブース",x:192,y:392,w:40,h:30,insta:"",desc:"",status:"ok",items:[]},
@@ -536,8 +540,8 @@ const MAP_BASE=`<defs>
 const POS={};
 [[1675,470],[1722,552],[1765,636],[1745,808],[1672,842],[1600,872],[1512,912],[1512,912]].forEach((p,i)=>{POS["K"+(i+1)]=p});
 for(let n=1;n<=16;n++){const r=Math.floor((n-1)/4), c=(n-1)%4; POS["H"+n]=[1415+c*50+r*25, 565-c*19.7+r*59];}
-POS.C1=[1160,692]; POS.C2=[1185,750]; POS.C3=[1215,805]; POS.C4=[1240,862]; POS.HQ=[1512,912]; POS.CAT=[1390,312]; POS.BAL=[1640,350]; POS.FIRE=[1335,752];
-const SIZE_ID={BAL:[165,92],FIRE:[124,58]};
+POS.C1=[1160,692]; POS.C2=[1185,750]; POS.C3=[1215,805]; POS.C4=[1240,862]; POS.HQ=[1512,912]; POS.CAT=[1390,312]; POS.BAL=[1640,350]; POS.FIRE=[1335,752]; POS.UKE=[1264,930]; POS.HOME=[1085,935];
+const SIZE_ID={BAL:[165,92],FIRE:[124,58],UKE:[78,46],HOME:[176,58]};
 const MSIZE={kitchen:[66,42],craft:[46,46],corp:[46,46],hq:[74,46],cat:[232,114]};
 SHOPS.forEach(s=>{const p=POS[s.id]; if(!p) return; const z=SIZE_ID[s.id]||MSIZE[s.type]||[46,46]; s.w=z[0]; s.h=z[1]; s.x=p[0]-z[0]/2; s.y=p[1]-z[1]/2;});
 
@@ -654,7 +658,7 @@ const emo=(g,type)=>CATS[g]||GEN_EMOJI[g]||(type==="craft"?"🛍️":"🍽️");
 const norm=s=>String(s||"").normalize("NFKC").toLowerCase().replace(/唐揚げ|唐揚|から揚げ|唐あげ|カラアゲ/g,"からあげ").replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-96));
 const hasText=(text,q)=>norm(text).includes(norm(q));
 const snip=t=>{const s=String(t||"").replace(/[（(]\s*[〜~～ー-]*\s*[)）]/g,"").replace(/\s{2,}/g," ").split(/\n+/).map(x=>x.trim()).filter(Boolean).join("／");return s.length>56?s.slice(0,56)+"…":s};
-function genreList(){const g=[];SHOPS.forEach(x=>{if(x.genre&&x.desc&&!g.includes(x.genre))g.push(x.genre)});const F=["がっつり","ごはん・麺","スイーツ・ドリンク","スイーツ"];return g.sort((a,b)=>(F.includes(a)?0:1)-(F.includes(b)?0:1))}
+function genreList(){const g=[];SHOPS.forEach(x=>{if(x.genre&&x.desc&&!x.info&&!g.includes(x.genre))g.push(x.genre)});const F=["がっつり","ごはん・麺","スイーツ・ドリンク","スイーツ"];return g.sort((a,b)=>(F.includes(a)?0:1)-(F.includes(b)?0:1))}
 function buildChips(){
   const src=sheetMode?genreList():Object.keys(CATS);
   if(selCat!=="すべて"&&!src.includes(selCat)) selCat="すべて";
@@ -676,7 +680,7 @@ $("#alChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(
 $("#q").addEventListener("input",e=>{qText=e.target.value.trim();renderFood()});
 function renderFood(){
   if(sheetMode){
-    const list=SHOPS.filter(s=>s.desc&&(selCat==="すべて"||s.genre===selCat)&&(!selMenu||MENUS.find(m=>m[0]===selMenu)[2].test(shopText(s)))&&(!qText||hasText([s.name,s.desc,s.pr||"",s.genre||""].join(" "),qText)));
+    const list=SHOPS.filter(s=>s.desc&&!s.info&&(selCat==="すべて"||s.genre===selCat)&&(!selMenu||MENUS.find(m=>m[0]===selMenu)[2].test(shopText(s)))&&(!qText||hasText([s.name,s.desc,s.pr||"",s.genre||""].join(" "),qText)));
     list.sort((a,b)=>(a.status==="out"?1:0)-(b.status==="out"?1:0));
     const lab=[selMenu,selCat!=="すべて"?selCat:""].filter(Boolean).join(" × ");
     const head=lab?`<div class="resHead">「${esc(lab)}」のお店　<b>${list.length}件</b><button class="pill rs" id="resetSel">✕ 選びなおす</button></div>`:"";
@@ -758,7 +762,7 @@ function drawMap(){
     h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="${s.id}">
       <rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="10" fill="${c}" fill-opacity=".93"/>
       ${on?`<rect class="ring" x="${s.x-10}" y="${s.y-10}" width="${s.w+20}" height="${s.h+20}" rx="16"/>`:""}
-      <text x="${s.x+s.w/2}" y="${s.y+s.h/2}">${s.id==="HQ"?"本部":s.id==="CAT"?"保護猫":s.id}</text>
+      <text x="${s.x+s.w/2}" y="${s.y+s.h/2}">${s.label||(s.id==="HQ"?"本部":s.id==="CAT"?"保護猫":s.id)}</text>
       
     </g>`;
   });
@@ -771,7 +775,7 @@ function drawMap(){
   $("#clearHit").hidden=!hit; $("#backList").hidden=!(hit&&fromList);
   {const hs=$("#mapHint"); if(hs){const t=hit&&shopById(hit); hs.textContent=t?("📍 「"+t.name+"」の場所です。光っているお店をタップすると詳細が見られます"):"お店をタップすると詳細が見られます"; hs.style.fontWeight=t?"700":""; hs.style.color=t?"#d6246e":"";}}
   $("#mapHint").textContent=hit?"ピンクの枠がお探しのお店です":"お店をタップすると詳細が見られます";
-  $("#legend").innerHTML=[["キッチンカー・飲食",GC.food],["マルシェ・ワークショップ",GC.market],["縁日・占い",GC.game],["整体・カイロ・本部",GC.body],["体験・ふれあい",GC.exp]].map(t=>`<span><i style="background:${t[1]}"></i>${t[0]}</span>`).join("");
+  $("#legend").innerHTML=[["キッチンカー・飲食",GC.food],["マルシェ・ワークショップ",GC.market],["縁日・占い",GC.game],["整体・カイロ・本部",GC.body],["体験・ふれあい",GC.exp],["案内・展示","#3d5a80"]].map(t=>`<span><i style="background:${t[1]}"></i>${t[0]}</span>`).join("");
 }
 $("#map").addEventListener("click",e=>{
   const g=e.target.closest(".booth"); if(!g)return;
@@ -835,7 +839,7 @@ function openShop(id){
   const hasS=stamps.has(id), isF=favs.has(id);
   sheet(`
     <h3>${esc(s.name)}</h3>
-    <div class="tag">${esc(s.genre||TYPES[s.type].label)}　${s.x!=null?"ブース "+esc(s.id):"場所は準備中"}　${st}</div>
+    <div class="tag">${esc(s.genre||TYPES[s.type].label)}　${s.info?"":(s.x!=null?"ブース "+esc(s.id):"場所は準備中")+"　"+st}</div>
     ${s.desc?(sheetMode?'<h4 style="margin:14px 0 4px">出店内容</h4>':'')+`<p class="pre">${esc(s.desc)}</p>`:""}
     ${s.pr?`<h4 style="margin:14px 0 4px">お店からひとこと</h4><p class="pre">${esc(s.pr)}</p>`:""}
     ${menu}
