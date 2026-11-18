@@ -474,19 +474,75 @@ CRAFTS.forEach((c,i)=>{
 /* ---- 会場マップ：写真の上に重ねるお店のマーク位置 ---- */
 const MAP_W=2000, MAP_H=1414;
 /* 会場の地図（イラスト）。建物・道路・駐車場の形は航空写真に合わせて描き起こしたもの */
-const MAP_BASE=`<image href="map-base.jpg?v=1" x="0" y="0" width="2000" height="1414" preserveAspectRatio="none"/>
-<g transform="rotate(-20 1560 1290)"><rect x="1400" y="1247" width="320" height="86" rx="43" fill="#d9342b" stroke="#fff" stroke-width="5"/><text x="1560" y="1291" style="font-size:42px;font-weight:900;fill:#fff;text-anchor:middle;dominant-baseline:central">来場者駐車場</text></g>
-<g><rect x="912" y="1078" width="76" height="62" rx="10" fill="#fff" stroke="#2b5fa8" stroke-width="4"/><text x="950" y="1101" style="font-size:30px;text-anchor:middle;dominant-baseline:central">🚻</text><text x="950" y="1127" style="font-size:16px;font-weight:700;fill:#2b5fa8;text-anchor:middle;dominant-baseline:central">トイレ</text></g>
-<g transform="rotate(-23.5 1420 1135)"><text x="1420" y="1135" style="font-size:38px;font-weight:900;fill:#fff;stroke:#6b747a;stroke-width:9px;paint-order:stroke;text-anchor:middle;dominant-baseline:central">入口</text></g>
-<g transform="rotate(-23 525 1140)"><text x="525" y="1140" style="font-size:30px;font-weight:900;fill:#5b7a95;stroke:#fff;stroke-width:9px;paint-order:stroke;text-anchor:middle;dominant-baseline:central">タカシンホーム本社</text></g>
-<text x="800" y="1090" style="font-size:70px;text-anchor:middle;dominant-baseline:central">🚒</text>
+const MAP_BASE=`<defs>
+  <pattern id="stripes" width="34" height="34" patternUnits="userSpaceOnUse" patternTransform="rotate(-62)">
+    <rect width="34" height="34" fill="none"/><rect x="0" y="0" width="5" height="34" fill="#ffffff" fill-opacity=".75"/>
+  </pattern>
+  <filter id="soft" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="6"/></filter>
+</defs>
+<rect width="2000" height="1414" fill="#dcecf8"/>
+<g><circle cx="1770" cy="48" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1762" cy="39" r="9" fill="#c4e8b4"/><circle cx="1830" cy="98" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1822" cy="89" r="9" fill="#c4e8b4"/><circle cx="1720" cy="20" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1712" cy="11" r="9" fill="#c4e8b4"/><circle cx="1955" cy="455" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1947" cy="446" r="9" fill="#c4e8b4"/><circle cx="1965" cy="385" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1957" cy="376" r="9" fill="#c4e8b4"/><circle cx="1935" cy="520" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1927" cy="511" r="9" fill="#c4e8b4"/><circle cx="640" cy="1330" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="632" cy="1321" r="9" fill="#c4e8b4"/><circle cx="690" cy="1384" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="682" cy="1375" r="9" fill="#c4e8b4"/><circle cx="570" cy="1370" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="562" cy="1361" r="9" fill="#c4e8b4"/><circle cx="40" cy="1250" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="32" cy="1241" r="9" fill="#c4e8b4"/><circle cx="40" cy="1330" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="32" cy="1321" r="9" fill="#c4e8b4"/><circle cx="1560" cy="1395" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1552" cy="1386" r="9" fill="#c4e8b4"/><circle cx="1000" cy="1390" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="992" cy="1381" r="9" fill="#c4e8b4"/><circle cx="1090" cy="1330" r="30" fill="#9fd08a" stroke="#6faa5c" stroke-width="4"/><circle cx="1082" cy="1321" r="9" fill="#c4e8b4"/></g>
+<!-- 駐車場（左・関係者） -->
+<polygon points="88,560 245,520 335,705 395,892 470,1062 574,1192 335,1414 100,1414 84,1075 66,815" fill="#dbe4ea"/>
+<polygon points="88,560 245,520 335,705 395,892 470,1062 574,1192 335,1414 100,1414 84,1075 66,815" fill="url(#stripes)" opacity=".55"/>
+<!-- 駐車場（右下・来場者） -->
+<polygon points="1262,1152 1480,1058 1730,975 1990,900 2000,1414 1250,1414 1205,1335" fill="#dbe4ea"/>
+<polygon points="1262,1152 1480,1058 1730,975 1990,900 2000,1414 1250,1414 1205,1335" fill="url(#stripes)" opacity=".55"/>
+<!-- 道路：南 -->
+<polygon points="760,1300 1000,1148 1260,1042 1480,945 1730,865 1990,790 2000,900 1730,975 1480,1058 1260,1152 1000,1260 700,1414 560,1414" fill="#b8c4cc"/>
+<polyline points="720,1356 1000,1204 1260,1097 1480,1002 1730,920 1995,845" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="34 26" opacity=".8"/>
+<!-- 道路：東（試乗車出入口） -->
+<polygon points="1500,0 1650,0 1705,100 1800,300 1865,420 1965,560 2000,640 2000,860 1950,780 1850,562 1760,420 1690,322 1585,112" fill="#b8c4cc"/>
+<polyline points="1575,0 1640,110 1745,320 1810,420 1910,560 1990,740" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="34 26" opacity=".8"/>
+<g fill="#fff" opacity=".85"><rect x="1488" y="6" width="14" height="70" transform="rotate(-18 1495 40)"/><rect x="1512" y="0" width="14" height="70" transform="rotate(-18 1519 35)"/><rect x="1536" y="-6" width="14" height="70" transform="rotate(-18 1543 30)"/></g>
+<!-- 会場の広場（アスファルト） -->
+<polygon points="1100,642 1103,585 1165,472 1530,358 1690,440 1850,562 1950,782 1730,865 1480,945 1262,1040 1150,815 1100,780" fill="#cdd7de" stroke="#fff" stroke-width="5" stroke-dasharray="14 10" stroke-opacity=".8"/>
+<!-- 建物の影 -->
+<g fill="#2a3f55" opacity=".16" filter="url(#soft)" transform="translate(14 18)">
+  <rect x="364" y="418" width="330" height="752" rx="44" transform="rotate(-25.7 529 794)" />
+  <rect x="674" y="247" width="890" height="314" rx="44" transform="rotate(-25.6 1119 404)" />
+  <rect x="510" y="78" width="700" height="110" rx="30" transform="rotate(-25.6 860 133)" />
+  <rect x="711" y="891" width="524" height="308" rx="40" transform="rotate(-25.6 973 1045)" />
+  <rect x="740" y="186" width="700" height="48" rx="22" transform="rotate(-26 1090 210)" />
+  <rect x="-40" y="790" width="120" height="300" rx="24" transform="rotate(0 20 940)" />
+  <rect x="110" y="1295" width="210" height="130" rx="24" transform="rotate(-25 215 1360)" />
+  <rect x="1118" y="1335" width="96" height="110" rx="20" transform="rotate(0 1166 1390)" />
+  <rect x="1925" y="150" width="110" height="200" rx="24" transform="rotate(0 1980 250)" />
+</g>
+<!-- 建物 -->
+<g stroke-width="5" stroke-linejoin="round">
+  <rect x="364" y="418" width="330" height="752" rx="44" transform="rotate(-25.7 529 794)" fill="#eef6fd" stroke="#a9c6de"/>
+  <rect x="674" y="247" width="890" height="314" rx="44" transform="rotate(-25.6 1119 404)" fill="#eef6fd" stroke="#a9c6de"/>
+  <rect x="510" y="78" width="700" height="110" rx="30" transform="rotate(-25.6 860 133)" fill="#e6f1fa" stroke="#a9c6de"/>
+  <rect x="711" y="891" width="524" height="308" rx="40" transform="rotate(-25.6 973 1045)" fill="#eaf3fb" stroke="#a9c6de"/>
+  <rect x="740" y="186" width="700" height="48" rx="22" transform="rotate(-26 1090 210)" fill="#a9c1dd" stroke="#7e95b3"/>
+  <rect x="-40" y="790" width="120" height="300" rx="24" transform="rotate(0 20 940)" fill="#e6f1fa" stroke="#a9c6de"/>
+  <rect x="110" y="1295" width="210" height="130" rx="24" transform="rotate(-25 215 1360)" fill="#e6f1fa" stroke="#a9c6de"/>
+  <rect x="1118" y="1335" width="96" height="110" rx="20" transform="rotate(0 1166 1390)" fill="#e6f1fa" stroke="#a9c6de"/>
+  <rect x="1925" y="150" width="110" height="200" rx="24" transform="rotate(0 1980 250)" fill="#e6f1fa" stroke="#a9c6de"/>
+</g>
+<!-- 会場の色分け -->
+<path d="M1670,470 L1808,718 L1745,808 L1512,912" fill="none" stroke="#7fc4ee" stroke-opacity=".28" stroke-width="120" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="1378,556 1592,480 1690,688 1480,780" fill="#8fd0f5" fill-opacity=".35" stroke="#4a9fe0" stroke-opacity=".7" stroke-width="4" stroke-dasharray="12 8"/>
+<!-- 駐車場 -->
+<g transform="rotate(-20 1780 1165)"><rect x="1620" y="1122" width="320" height="86" rx="43" fill="#d9342b"/><text x="1780" y="1166" style="font-size:42px;font-weight:900;fill:#fff;text-anchor:middle;dominant-baseline:central">来場者駐車場</text></g>
+<g transform="rotate(-20 1775 1330)"><rect x="1730" y="1285" width="90" height="90" rx="14" fill="#1565c0" stroke="#fff" stroke-width="5"/><text x="1775" y="1332" style="font-size:66px;font-weight:900;fill:#fff;text-anchor:middle;dominant-baseline:central">P</text></g>
+<!-- トイレ -->
+<g><rect x="672" y="898" width="76" height="62" rx="10" fill="#fff" stroke="#2b5fa8" stroke-width="4"/><text x="710" y="921" style="font-size:30px;text-anchor:middle;dominant-baseline:central">🚻</text><text x="710" y="947" style="font-size:16px;font-weight:700;fill:#2b5fa8;text-anchor:middle;dominant-baseline:central">トイレ</text></g>
+<g transform="translate(1790 332) rotate(-25)"><polygon points="-50,-14 10,-14 10,-32 56,0 10,32 10,14 -50,14" fill="#fff" stroke="#6b747a" stroke-width="4"/></g>
+<!-- お客さまの入口（本部の左側。矢印なし、文字のみ） -->
+<text x="1360" y="997" transform="rotate(-23.5 1360 997)" style="font-size:38px;font-weight:900;fill:#fff;stroke:#6b747a;stroke-width:9px;paint-order:stroke;text-anchor:middle;dominant-baseline:central">入口</text>
+<!-- タカシンホーム本社 -->
+<g transform="rotate(-23 1000 1040)"><text x="1000" y="1040" style="font-size:44px;font-weight:900;fill:#5b7a95;text-anchor:middle;dominant-baseline:central">タカシンホーム本社</text></g>
+<!-- 消防車 -->
+<text x="1335" y="824" style="font-size:70px;text-anchor:middle;dominant-baseline:central">🚒</text>
 `;
 const POS={};
-[[1650,420],[1730,520],[1800,640],[1815,790],[1735,890],[1640,925],[1540,965],[1540,965]].forEach((p,i)=>{POS["K"+(i+1)]=p});
-for(let n=1;n<=16;n++){const r=Math.floor((n-1)/4), c=(n-1)%4; POS["H"+n]=[1085+c*90+r*45, 550-c*35+r*106];}
-POS.C1=[860,660]; POS.C2=[898,732]; POS.C3=[936,804]; POS.C4=[974,876]; POS.HQ=[1540,965]; POS.CAT=[1000,250]; POS.BAL=[1620,300]; POS.FIRE=[800,1000]; POS.UKE=[1030,975]; POS.HOME=[470,1030];
-const SIZE_ID={BAL:[165,92],FIRE:[204,78],UKE:[78,46],HOME:[176,58]};
-const MSIZE={kitchen:[82,52],craft:[58,58],corp:[58,58],hq:[92,56],cat:[232,114]};
+[[1675,470],[1722,552],[1765,636],[1745,808],[1672,842],[1600,872],[1512,912],[1512,912]].forEach((p,i)=>{POS["K"+(i+1)]=p});
+for(let n=1;n<=16;n++){const r=Math.floor((n-1)/4), c=(n-1)%4; POS["H"+n]=[1415+c*50+r*25, 565-c*19.7+r*59];}
+POS.C1=[1160,692]; POS.C2=[1185,750]; POS.C3=[1215,805]; POS.C4=[1240,862]; POS.HQ=[1512,912]; POS.CAT=[1390,312]; POS.BAL=[1640,350]; POS.FIRE=[1335,752]; POS.UKE=[1264,930]; POS.HOME=[1085,935];
+const SIZE_ID={BAL:[165,92],FIRE:[176,76],UKE:[78,46],HOME:[176,58]};
+const MSIZE={kitchen:[66,42],craft:[46,46],corp:[46,46],hq:[74,46],cat:[232,114]};
 SHOPS.forEach(s=>{const p=POS[s.id]; if(!p) return; const z=SIZE_ID[s.id]||MSIZE[s.type]||[46,46]; s.w=z[0]; s.h=z[1]; s.x=p[0]-z[0]/2; s.y=p[1]-z[1]/2;});
 
 /* ステージ表は Google スプレッドシートから自動で読み込みます（読めない時は下の一覧を表示）。
@@ -663,7 +719,7 @@ $("#foodList").addEventListener("click",e=>{
 /* ---- マップ ---- */
 let hit=null; let fromList=0, listY=0;
 let mapView="area";
-const VIEWS={full:[0,0,2000,1414],area:[365,165,1650,1167]};
+const VIEWS={full:[0,0,2000,1414],area:[955,252,980,744]};
 function viewBoxFor(){
   if(mapView==="zoom"){
     const t=hit&&shopById(hit), c=(t&&t.x!=null)?[t.x+t.w/2,t.y+t.h/2]:[1550,650], w=560, hh=426;
@@ -676,12 +732,12 @@ function drawMap(){
   svg.setAttribute("viewBox",viewBoxFor().join(" "));
   let h=`
    ${MAP_BASE}
-   ${mapView==="full"?`<g><rect x="35" y="73" width="791" height="370" rx="24" fill="#f2f9ff" stroke="#b9dcf3" stroke-width="6"/>
+   <g><rect x="35" y="73" width="791" height="370" rx="24" fill="#f2f9ff" stroke="#b9dcf3" stroke-width="6"/>
      <text x="430" y="175" style="font-size:80px;font-weight:900;fill:#4a2f1e;text-anchor:middle">会場マップ</text>
      <text x="430" y="255" style="font-size:42px;font-weight:700;fill:#8a6f5c;text-anchor:middle">${esc(EVENT.name)}</text>
-     <text x="430" y="330" style="font-size:36px;fill:#8a6f5c;text-anchor:middle">お店のマークをタップしてね</text></g>`:""}
-   <g class="booth stage" data-go="stage" transform="rotate(-20 690 690)"><rect x="585" y="660" width="210" height="60" rx="14" fill="#e8577d"/><text x="690" y="690" style="font-size:30px;fill:#fff;text-anchor:middle;dominant-baseline:central">🎤 ステージ</text></g>
-   <g><rect x="660" y="780" width="200" height="52" rx="26" fill="#fff" stroke="#2b5fa8" stroke-width="4"/><text x="760" y="806" style="font-size:24px;font-weight:700;fill:#2b5fa8;text-anchor:middle;dominant-baseline:central">飲食・観覧席</text></g>`;
+     <text x="430" y="330" style="font-size:36px;fill:#8a6f5c;text-anchor:middle">お店のマークをタップしてね</text></g>
+   <g class="booth stage" data-go="stage" transform="rotate(-25 1234 556)"><rect x="1129" y="526" width="210" height="60" rx="14" fill="#e8577d"/><text x="1234" y="556" style="font-size:30px;fill:#fff;text-anchor:middle;dominant-baseline:central">🎤 ステージ</text></g>
+   <g><rect x="1235" y="636" width="200" height="52" rx="26" fill="#fff" stroke="#2b5fa8" stroke-width="4"/><text x="1335" y="662" style="font-size:24px;font-weight:700;fill:#2b5fa8;text-anchor:middle;dominant-baseline:central">飲食・観覧席</text></g>`;
   const active = hit && shopById(hit);
   if(sheetMode){
     const used=new Set(SHOPS.map(s=>s.id));
@@ -692,17 +748,15 @@ function drawMap(){
     if(s.x==null) return;
     const c=gcol(s), on=active&&active.id===s.id, dim=active&&!on;
     if(s.id==="BAL"){
-      const bx=s.x,by=s.y,bc=s.x+s.w/2;
-      h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="BAL"><rect x="${bx}" y="${by}" width="${s.w}" height="${s.h}" rx="14" fill="#fff" style="stroke:#2b2a28;stroke-width:5"/>${on?`<rect class="ring" x="${bx-10}" y="${by-10}" width="${s.w+20}" height="${s.h+20}" rx="20"/>`:""}<text x="${bc}" y="${by+18}" style="font-size:26px;fill:#2b2a28;stroke:none;text-anchor:middle;dominant-baseline:central">バルコム</text><text x="${bc}" y="${by+45}" style="font-size:26px;fill:#2b2a28;stroke:none;text-anchor:middle;dominant-baseline:central">モータース</text><text x="${bc}" y="${by+75}" style="font-size:20px;fill:#c9680f;stroke:none;text-anchor:middle;dominant-baseline:central">試乗車あり</text></g>`;
+      h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="BAL"><rect x="1557" y="304" width="166" height="92" rx="14" fill="#fff" style="stroke:#2b2a28;stroke-width:5"/>${on?'<rect class="ring" x="1547" y="294" width="186" height="112" rx="20"/>':""}<text x="1640" y="322" style="font-size:26px;fill:#2b2a28;stroke:none;text-anchor:middle;dominant-baseline:central">バルコム</text><text x="1640" y="349" style="font-size:26px;fill:#2b2a28;stroke:none;text-anchor:middle;dominant-baseline:central">モータース</text><text x="1640" y="379" style="font-size:20px;fill:#c9680f;stroke:none;text-anchor:middle;dominant-baseline:central">試乗車あり</text></g>`;
       return;
     }
     if(s.id==="FIRE"){
-      h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="FIRE"><rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="12" fill="#c0392b"/>${on?`<rect class="ring" x="${s.x-10}" y="${s.y-10}" width="${s.w+20}" height="${s.h+20}" rx="18"/>`:""}<text x="${s.x+s.w/2}" y="${s.y+24}" style="font-size:28px;font-weight:700;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">消防車展示</text><text x="${s.x+s.w/2}" y="${s.y+56}" style="font-size:23px;font-weight:700;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">10:00〜12:00</text></g>`;
+      h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="FIRE"><rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="12" fill="#c0392b"/>${on?`<rect class="ring" x="${s.x-10}" y="${s.y-10}" width="${s.w+20}" height="${s.h+20}" rx="18"/>`:""}<text x="${s.x+s.w/2}" y="${s.y+24}" style="font-size:28px;font-weight:700;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">消防車展示</text><text x="${s.x+s.w/2}" y="${s.y+55}" style="font-size:25px;font-weight:700;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">10:00〜12:00</text></g>`;
       return;
     }
     if(s.id==="CAT"){
-      const cx=s.x+s.w/2, cy=s.y+s.h/2;
-      h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="CAT" transform="rotate(-20 ${cx} ${cy})"><rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="16" fill="#9b6bd9"/>${on?`<rect class="ring" x="${s.x-10}" y="${s.y-10}" width="${s.w+20}" height="${s.h+20}" rx="22"/>`:""}<text x="${cx}" y="${cy-22}" style="font-size:30px;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">VR体験</text><text x="${cx}" y="${cy+22}" style="font-size:27px;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">保護犬猫の譲渡会</text></g>`;
+      h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="CAT" transform="rotate(-25 1389 312)"><rect x="1273" y="255" width="232" height="114" rx="16" fill="#9b6bd9"/>${on?'<rect class="ring" x="1263" y="245" width="252" height="134" rx="22"/>':""}<text x="1389" y="290" style="font-size:30px;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">VR体験</text><text x="1389" y="334" style="font-size:27px;fill:#fff;stroke:none;text-anchor:middle;dominant-baseline:central">保護犬猫の譲渡会</text></g>`;
       return;
     }
     h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="${s.id}">
