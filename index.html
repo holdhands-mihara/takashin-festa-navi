@@ -914,7 +914,7 @@ const SLOTS={};
 SAMPLE_SHOPS.filter(s=>IS_SLOT(s.id)).forEach(s=>{SLOTS[s.id]={x:s.x,y:s.y,w:s.w,h:s.h}});
 const FIXED=SAMPLE_SHOPS.filter(s=>!IS_SLOT(s.id)).map(s=>{
   const c=Object.assign({},s); c.name=c.name.replace(/（サンプル）/,"");
-  if(c.type==="corp"&&/^C[0-9]$/.test(c.id)){c.name="タカシンブース";c.desc="ボール落とし\n輪投げ\n綿菓子\n飲物販売\nポップコーン販売（福山ガス）※4つのエリアのうち1か所\nベイブレード大会 13:00〜（先着50名・優勝者には豪華ベイブレードをプレゼント）";c.genre="タカシンブース";}
+  if(c.type==="corp"&&/^C[0-9]$/.test(c.id)){c.name="タカシンブース";c.desc="ボール落とし\n輪投げ\n綿菓子\n飲物販売\nポップコーン\nベイブレード大会 13:00〜（先着50名・優勝者には豪華ベイブレードをプレゼント）";c.genre="タカシンブース";}
   if(c.id==="HQ"){c.genre="がっつり";c.desc="「にわとりが焼くやきとり屋」を出店します。迷子・困りごとの相談もここです。";c.items=[];}
   if(c.id==="CAT"){c.genre="VR・譲渡会";}
   return c;
