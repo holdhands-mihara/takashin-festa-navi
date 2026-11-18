@@ -650,7 +650,7 @@ const emo=(g,type)=>CATS[g]||GEN_EMOJI[g]||(type==="craft"?"🛍️":"🍽️");
 const norm=s=>String(s||"").normalize("NFKC").toLowerCase().replace(/唐揚げ|唐揚|から揚げ|唐あげ|カラアゲ/g,"からあげ").replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-96));
 const hasText=(text,q)=>norm(text).includes(norm(q));
 const snip=t=>{const s=String(t||"").replace(/[（(]\s*[〜~～ー-]*\s*[)）]/g,"").replace(/\s{2,}/g," ").split(/\n+/).map(x=>x.trim()).filter(Boolean).join("／");return s.length>56?s.slice(0,56)+"…":s};
-function genreList(){const g=[];SHOPS.forEach(x=>{if(x.genre&&x.desc&&!g.includes(x.genre))g.push(x.genre)});const F=["がっつり","スイーツ・ドリンク"];return g.sort((a,b)=>(F.includes(a)?0:1)-(F.includes(b)?0:1))}
+function genreList(){const g=[];SHOPS.forEach(x=>{if(x.genre&&x.desc&&!g.includes(x.genre))g.push(x.genre)});const F=["がっつり","ごはん・麺","スイーツ・ドリンク","スイーツ"];return g.sort((a,b)=>(F.includes(a)?0:1)-(F.includes(b)?0:1))}
 function buildChips(){
   const src=sheetMode?genreList():Object.keys(CATS);
   if(selCat!=="すべて"&&!src.includes(selCat)) selCat="すべて";
