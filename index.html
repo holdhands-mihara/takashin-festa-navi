@@ -270,6 +270,8 @@ h1{font-size:clamp(26px,8.2vw,44px);line-height:1.15;text-shadow:0 3px 0 rgba(25
 html,body,button,input,select,textarea,.item,.chip,.pill,.hint,.cl,.resHead,.slot,.btn{font-family:"BIZ UDPGothic","Zen Maru Gothic","Hiragino Sans","Yu Gothic UI","Meiryo",sans-serif}
 .resHead{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .resHead .rs{margin-left:auto;background:#fff;border:2px solid #e8577d;color:#d6246e;font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px;cursor:pointer}
+.slot.ev{background:#fff4d6;border:2px dashed #f08a24}
+.slot.ev .nm b::before{content:"🌀 "}
 </style>
 </head>
 <body>
@@ -575,6 +577,8 @@ function nowMin(){
   const d=new Date(), iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
   return iso===EVENT.date ? d.getHours()*60+d.getMinutes() : null;
 }
+let VIEW=[];
+const EXTRA=[{s:"13:00",e:"",team:"ベイブレード大会",genre:"タカシンブース",desc:"13:00から開始！先着50名。優勝者には豪華ベイブレードをプレゼントします。",links:[],booth:true}];
 function stageState(){
   const n=nowMin(); if(n==null) return {now:null,next:null,live:false};
   let now=null,next=null;
@@ -789,10 +793,11 @@ function renderStage(){
   $("#demoBox").hidden = (nowMin()!=null && !demoT) ;
   $("#demoTime").value = demoT||"";
   const st=stageState();
-  $("#stageList").innerHTML=STAGE.map((x,i)=>{
+  VIEW=STAGE.concat(EXTRA).sort((a,b)=>toMin(a.s)-toMin(b.s));
+  $("#stageList").innerHTML=VIEW.map((x,i)=>{
     const isNow=st.now===x, isNext=st.next===x;
-    return `<button class="slot ${isNow?"now":""}" data-i="${i}">
-      <div class="tm">${esc(x.s)}<small>〜${esc(x.e)}</small></div>
+    return `<button class="slot ${isNow?"now":""} ${x.booth?"ev":""}" data-i="${i}">
+      <div class="tm">${esc(x.s)}<small>〜${esc(x.e||"")}</small></div>
       <div class="nm"><b>${isNow?'<span class="badge now">いま出演中</span>':''}${isNext?'<span class="badge next">次</span>':''}${esc(x.team)}</b><span>${esc(x.genre)}　▶ 詳細・リンク</span></div>
     </button>`}).join("");
 }
@@ -842,10 +847,10 @@ function openShop(id){
     </div>`);
 }
 function openTeam(i){
-  const x=STAGE[i];
+  const x=VIEW[i];
   sheet(`
     <h3>${esc(x.team)}</h3>
-    <div class="tag">${esc(x.genre)}　🕒 ${esc(x.s)}〜${esc(x.e)}　📍 特設ステージ</div>
+    <div class="tag">${esc(x.genre)}　🕒 ${esc(x.s)}〜${esc(x.e||"")}　📍 ${x.booth?"タカシンブース":"特設ステージ"}</div>
     <p>${esc(x.desc)}</p>
     <div class="btns">
       ${x.links.map(l=>`<a class="btn insta" href="${esc(l.u)}" target="_blank" rel="noopener">🔗 ${esc(l.l)}</a>`).join("")}
@@ -909,7 +914,7 @@ const SLOTS={};
 SAMPLE_SHOPS.filter(s=>IS_SLOT(s.id)).forEach(s=>{SLOTS[s.id]={x:s.x,y:s.y,w:s.w,h:s.h}});
 const FIXED=SAMPLE_SHOPS.filter(s=>!IS_SLOT(s.id)).map(s=>{
   const c=Object.assign({},s); c.name=c.name.replace(/（サンプル）/,"");
-  if(c.type==="corp"&&/^C[0-9]$/.test(c.id)){c.name="タカシンブース";c.desc="ポップコーンなど";c.genre="タカシンブース";}
+  if(c.type==="corp"&&/^C[0-9]$/.test(c.id)){c.name="タカシンブース";c.desc="ボール落とし\n輪投げ\n綿菓子\n飲物販売\nポップコーン販売（福山ガス）※4つのエリアのうち1か所\nベイブレード大会 13:00〜（先着50名・優勝者には豪華ベイブレードをプレゼント）";c.genre="タカシンブース";}
   if(c.id==="HQ"){c.genre="がっつり";c.desc="「にわとりが焼くやきとり屋」を出店します。迷子・困りごとの相談もここです。";c.items=[];}
   if(c.id==="CAT"){c.genre="VR・譲渡会";}
   return c;
