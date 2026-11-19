@@ -272,6 +272,13 @@ html,body,button,input,select,textarea,.item,.chip,.pill,.hint,.cl,.resHead,.slo
 .resHead .rs{margin-left:auto;background:#fff;border:2px solid #e8577d;color:#d6246e;font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px;cursor:pointer}
 .slot.ev{background:#fff4d6;border:2px dashed #f08a24}
 .slot.ev .nm b::before{content:"🌀 "}
+.balloons{position:absolute;left:0;right:0;top:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
+.bl{position:absolute;height:auto;animation:blfloat 4.2s ease-in-out infinite;transform-origin:50% 100%}
+.bl1{right:12px;bottom:46px;width:70px}
+.bl2{right:6px;top:6px;width:46px;animation-delay:-2.1s}
+@keyframes blfloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+@media (prefers-reduced-motion:reduce){.bl{animation:none}}
+.subttl{transform:none;color:#0c2a4a;font-weight:900;-webkit-text-stroke:.6px #0c2a4a;text-shadow:0 1px 0 rgba(255,255,255,.9),1px 0 0 rgba(255,255,255,.9),-1px 0 0 rgba(255,255,255,.9)}
 </style>
 </head>
 <body>
@@ -279,6 +286,7 @@ html,body,button,input,select,textarea,.item,.chip,.pill,.hint,.cl,.resHead,.slo
 <div class="page">
 <header>
   <div class="flags"></div>
+  <div class="balloons" aria-hidden="true"><svg class="bl bl1" viewBox="0 0 120 160" aria-hidden="true"><g><path d="M40,71 C34,101 46,121 60,150" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M40,71 l-6,10 h12z" fill="#ff6b9d"/><ellipse cx="40" cy="40" rx="25" ry="31" fill="#ff6b9d" stroke="#fff" stroke-width="3"/><ellipse cx="31.25" cy="30.700000000000003" rx="5" ry="8.680000000000001" fill="#fff" opacity=".6"/></g><g><path d="M82,61 C76,91 88,111 60,150" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M82,61 l-6,10 h12z" fill="#ffd93d"/><ellipse cx="82" cy="32" rx="23" ry="29" fill="#ffd93d" stroke="#fff" stroke-width="3"/><ellipse cx="73.95" cy="23.3" rx="4.6000000000000005" ry="8.120000000000001" fill="#fff" opacity=".6"/></g><g><path d="M62,106 C56,136 68,156 60,150" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M62,106 l-6,10 h12z" fill="#4aa3df"/><ellipse cx="62" cy="76" rx="24" ry="30" fill="#4aa3df" stroke="#fff" stroke-width="3"/><ellipse cx="53.6" cy="67" rx="4.800000000000001" ry="8.4" fill="#fff" opacity=".6"/></g></svg><svg class="bl bl2" viewBox="0 0 120 160" aria-hidden="true"><g><path d="M44,73 C38,103 50,123 60,150" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M44,73 l-6,10 h12z" fill="#c77dff"/><ellipse cx="44" cy="42" rx="25" ry="31" fill="#c77dff" stroke="#fff" stroke-width="3"/><ellipse cx="35.25" cy="32.7" rx="5" ry="8.680000000000001" fill="#fff" opacity=".6"/></g><g><path d="M80,79 C74,109 86,129 60,150" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M80,79 l-6,10 h12z" fill="#6bcb77"/><ellipse cx="80" cy="50" rx="23" ry="29" fill="#6bcb77" stroke="#fff" stroke-width="3"/><ellipse cx="71.95" cy="41.3" rx="4.6000000000000005" ry="8.120000000000001" fill="#fff" opacity=".6"/></g></svg></div>
   <div class="hero">
     <div class="logo" id="logo">
       <img src="logo.png" alt="ホールドハンズ" onerror="this.remove();document.getElementById('logoFallback').style.display='block'">
