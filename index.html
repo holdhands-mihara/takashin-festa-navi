@@ -677,7 +677,11 @@ const instaUrl = h => "https://www.instagram.com/"+h.replace(/^@/,"")+"/";
 
 /* ---- 時刻（当日は実時間、それ以外は ?t=11:30 か入力欄でテスト） ---- */
 const toMin = t => {const [h,m]=t.split(":").map(Number);return h*60+m};
-let demoT = new URLSearchParams(location.search).get("t") || store.get("demoT","");
+/* テスト用の時刻入力欄は 11/28 から自動で消える（URLに ?t=11:30 を付けたときだけ使える） */
+const TEST_END="2026-11-28";
+const _d=new Date(), TODAY=_d.getFullYear()+"-"+String(_d.getMonth()+1).padStart(2,"0")+"-"+String(_d.getDate()).padStart(2,"0");
+const TEST_OFF = TODAY>=TEST_END && !new URLSearchParams(location.search).get("t");
+let demoT = new URLSearchParams(location.search).get("t") || (TEST_OFF ? "" : store.get("demoT",""));
 function nowMin(){
   if(demoT) return toMin(demoT);
   const d=new Date(), iso=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
@@ -892,7 +896,7 @@ function showOnMap(id,openSheet){
 
 /* ---- ステージ ---- */
 function renderStage(){
-  $("#demoBox").hidden = (nowMin()!=null && !demoT) ;
+  $("#demoBox").hidden = TEST_OFF || (nowMin()!=null && !demoT) ;
   $("#demoTime").value = demoT||"";
   const st=stageState();
   VIEW=STAGE.concat(EXTRA).sort((a,b)=>toMin(a.s)-toMin(b.s));
