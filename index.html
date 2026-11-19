@@ -860,7 +860,7 @@ function drawMap(){
     h+=`<g class="booth ${on?"hit":""} ${dim?"dim":""}" data-id="${s.id}" filter="url(#sh)">
       <rect x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="${Math.min(s.h/2.6,20)}" fill="${c}"/>
       ${on?`<rect class="ring" x="${s.x-10}" y="${s.y-10}" width="${s.w+20}" height="${s.h+20}" rx="16"/>`:""}
-      <text x="${s.x+s.w/2}" y="${s.y+s.h/2}">${s.label||(s.id==="HQ"?"本部":s.id==="CAT"?"保護猫":s.id)}</text>
+      <text x="${s.x+s.w/2}" y="${s.y+s.h/2}">${s.label||(s.id==="HQ"?"本部":s.id==="CAT"?"保護猫":s.id)}</text>${s.id==="HQ"?`<image href="chicken.webp" x="${s.x+s.w/2-34}" y="${s.y-52}" width="84" height="67" pointer-events="none"/>`:""}
       
     </g>`;
   });
